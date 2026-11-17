@@ -17,7 +17,7 @@ import { renderProjects, startProject, startChallenge } from './views/projects.j
 import { renderFriends, renderUser, renderChat } from './views/friends.js';
 import { renderGroup } from './views/groups.js';
 import { renderAccount } from './views/account.js';
-import { initCloud } from './cloud.js';
+import { initCloud, takeOAuthReturn } from './cloud.js';
 import { allowNavigation } from './guard.js';
 import { applyUiLang } from './i18n.js';
 
@@ -108,6 +108,10 @@ window.addEventListener('hashchange', () => { if (allowNavigation()) route(); })
 
 applyTheme();
 applyUiLang();
+// Zurueck von Google/Apple: Anmeldung abschliessen (Konto-Seite wartet auf die Sitzung)
+if (takeOAuthReturn() && /[?&](code|error)=/.test(location.search)) {
+  history.replaceState(null, '', `${location.pathname}${location.search}#/konto/weiter`);
+}
 route();
 startAutoBackup();
 getStatus();

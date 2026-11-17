@@ -83,9 +83,10 @@ Unter **Profil, Profil bearbeiten** stellst du Name, Benutzername, „Über mich
 - **C++ online:** kein Compiler. Aufgaben werden über die Regeln geprüft („Angenommen, aber ungeprüft“). In der Werkstatt steht, wie man Laufzeit herunterlädt.
 - **Konten:** Supabase, eingerichtet laut `EINRICHTEN.md`. Zugangsdaten in `app/js/config.js`. Sind sie leer, bleibt alles lokal wie vorher.
   - `cloud.js`: Login, Speichern im Konto, Freunde, Nachrichten, Anfeuern.
-  - `views/account.js`: Seiten Login, Registrieren, Passwort.
+  - `views/account.js`: Seiten Login, Registrieren (auch mit Google/Apple), Benutzername wählen, Passwort.
   - `views/friends.js`: Freunde, fremde Profile, Chat.
   - `supabase/schema.sql`: Tabellen und Zugriffsregeln.
+- **Google und Apple:** Die Knöpfe erscheinen nur, wenn der Anbieter in Supabase eingeschaltet ist (die App fragt `/auth/v1/settings`). Nach der Rückkehr landet man auf `#/konto/weiter`. Neue Konten bekommen von der Datenbank einen freien Benutzernamen (`05-google-apple.sql`) und bestätigen oder ändern ihn einmal. Ohne Passwort zeigt das Profil „Passwort festlegen“ statt „Passwort ändern“.
 - **Speichern im Konto:** 4 Sekunden nach jeder Änderung und beim Schließen. Beim Einloggen gewinnt der Stand mit mehr XP. Wenn beide Fortschritt haben, fragt die App nach. Der Stand eines anderen Kontos auf demselben Gerät wird nie übernommen. Beim Ausloggen wird der Browser geleert.
 - **Was Freunde sehen:** Name, Benutzername, Bilder, Bio, XP, Serie, Kurs, Abschnitt, Lektionen, Gold und die Lerntage der letzten 60 Tage. Daraus berechnet die App die gemeinsame Serie.
 - **Schutz:**

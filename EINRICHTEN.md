@@ -69,6 +69,71 @@ Erst nach Schritt 6 ausführen.
 
 Ohne 04 laufen Gruppen weiter wie bisher, nur ohne Bild, Bio und Admins.
 
+## 8. Anmelden mit Google und Apple (Erweiterung)
+
+Danach gibt es auf Login- und Registrier-Seite die Knöpfe **Weiter mit Google** und **Weiter mit Apple**. Jeder Knopf erscheint von selbst, sobald der Anbieter in Supabase eingeschaltet ist. Du kannst also auch nur Google machen (kostenlos) und Apple später (kostet bei Apple 99 $ pro Jahr).
+
+### 8a. Datenbank (einmal, für beide)
+
+1. **SQL Editor**, **New query**.
+2. Inhalt von `supabase/05-google-apple.sql` einfügen, **Run**.
+
+Ohne diesen Schritt scheitert das erste Anmelden mit Google/Apple mit „Database error saving new user“, weil Google keinen Benutzernamen mitbringt. Jetzt denkt sich die Datenbank einen aus, und die App fragt danach einmal, ob man ihn behalten oder ändern will.
+
+### 8b. Google
+
+1. **https://console.cloud.google.com** öffnen, oben **Projekt auswählen**, **Neues Projekt**, Name `Bitweg`, **Erstellen**.
+2. Menü, **APIs & Dienste** (bzw. **Google Auth Platform**), **OAuth-Zustimmungsbildschirm** bzw. **Branding**:
+   - App-Name: `Bitweg`, Support-E-Mail: deine
+   - Zielgruppe: **Extern**
+   - Autorisierte Domains: `bitweg.de` und `supabase.co`
+   - Datenzugriff/Bereiche: `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile` (das sind die Standardwerte)
+   - Unter **Zielgruppe** auf **App veröffentlichen** klicken. Sonst können sich nur eingetragene Testnutzer anmelden.
+3. **Clients** (bzw. **Anmeldedaten**), **Client erstellen** bzw. **OAuth-Client-ID**:
+   - Anwendungstyp: **Webanwendung**, Name: `Bitweg`
+   - Autorisierte JavaScript-Quellen: `https://bitweg.de`
+   - Autorisierte Weiterleitungs-URIs: `https://jpqpkoihjjumncilonik.supabase.co/auth/v1/callback`
+   - **Erstellen**. Jetzt werden **Client-ID** und **Clientschlüssel** angezeigt.
+4. Supabase: **Authentication**, **Sign In / Providers**, **Google**:
+   - **Enable Sign in with Google**: an
+   - **Client IDs**: die Client-ID, **Client Secret**: den Clientschlüssel
+   - **Save**.
+
+Der Clientschlüssel kommt nur in Supabase, nicht in die App und nicht ins Repo.
+
+### 8c. Apple
+
+Braucht ein Konto im **Apple Developer Program** (https://developer.apple.com/programs, 99 $ pro Jahr).
+
+1. **https://developer.apple.com/account**, **Certificates, IDs & Profiles**, **Identifiers**, **+**:
+   - **App IDs**, Typ **App**, Description `Bitweg`, Bundle ID (Explicit) `de.bitweg.app`
+   - Bei Capabilities **Sign in with Apple** anhaken, **Continue**, **Register**.
+2. Wieder **Identifiers**, **+**, diesmal **Services IDs**:
+   - Description `Bitweg Web`, Identifier `de.bitweg.web`, **Register**.
+   - Den neuen Eintrag öffnen, **Sign in with Apple** anhaken, **Configure**:
+     - Primary App ID: `de.bitweg.app`
+     - Domains: `jpqpkoihjjumncilonik.supabase.co`
+     - Return URLs: `https://jpqpkoihjjumncilonik.supabase.co/auth/v1/callback`
+   - **Next**, **Done**, **Continue**, **Save**.
+3. **Keys**, **+**: Name `Bitweg Login`, **Sign in with Apple** anhaken, **Configure**, App ID `de.bitweg.app` wählen, **Save**, **Continue**, **Register**.
+   - **Download** lädt eine `.p8`-Datei. Das geht **nur einmal**, gut aufheben, niemandem geben.
+   - Die **Key ID** notieren. Die **Team ID** steht oben rechts unter deinem Namen.
+4. Supabase: **Authentication**, **Sign In / Providers**, **Apple**:
+   - **Enable Sign in with Apple**: an
+   - **Client IDs**: `de.bitweg.web`
+   - **Secret Key**: Apple will hier keinen festen Schlüssel, sondern einen daraus erzeugten. Auf der Supabase-Seite zu Apple (Link „docs“ neben dem Feld, Abschnitt „Generate a client secret“) gibt es einen Generator: Team ID, Key ID, Services ID und den Inhalt der `.p8`-Datei eintragen, das Ergebnis hier einfügen.
+   - **Save**.
+
+**Wichtig:** Dieser erzeugte Schlüssel läuft nach höchstens **6 Monaten** ab. Dann geht „Weiter mit Apple“ nicht mehr, bis du Schritt 4 mit derselben `.p8`-Datei wiederholst. Am besten gleich einen Kalender-Eintrag machen.
+
+### Gut zu wissen
+
+- **Gleiche E-Mail = gleiches Konto.** Wer schon mit E-Mail und Passwort registriert ist und dann „Weiter mit Google“ mit derselben Adresse nimmt, landet im selben Konto.
+- **Apple kann die E-Mail verstecken.** Dann bekommt Bitweg eine Adresse wie `abc123@privaterelay.appleid.com`. Das ist normal, die App braucht die echte Adresse nicht.
+- **Google/Apple-Konten haben erst mal kein Passwort.** Unter **Profil → Konto** gibt es dafür „Passwort festlegen“. Danach geht auch der Login mit E-Mail und Passwort.
+- **In WhatsApp, Instagram und TikTok** blockt Google die Anmeldung im eingebauten Browser. Die App zeigt dort einen Hinweis, die Seite erst im richtigen Browser zu öffnen.
+- **Lokale Version** (`start.bat`): Die Knöpfe gibt es dort auch, weil `http://127.0.0.1:5741/` schon bei den Redirect URLs steht (Schritt 3).
+
 ## E-Mail und Passwort ändern
 
 Geht in der App unter **Profil → Konto**, jeweils mit dem aktuellen Passwort. Bei einer neuen E-Mail schickt Supabase Bestätigungs-Links (meist an alte und neue Adresse). Wie viele Mails pro Stunde rausgehen, hängt am E-Mail-Versand: Mit dem eingebauten Supabase-Versand sind es nur wenige, mit eigenem SMTP (Authentication → Emails → SMTP Settings) deutlich mehr.

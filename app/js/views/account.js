@@ -1,4 +1,4 @@
-// Konto: Registrieren, Einloggen, Passwort vergessen, neues Passwort
+// Konto: Registrieren, Einloggen (auch mit Google/Apple), Passwort vergessen, neues Passwort
 // Eigene Vollbild-Seite (wie die Einfuehrung), funktioniert auch vor der Einfuehrung.
 
 import { t, locale } from '../i18n.js';
@@ -6,7 +6,55 @@ import { h, toast } from '../util.js';
 import { bit } from '../mascot.js';
 import { uiLangButton } from './uilang.js';
 import { store } from '../store.js';
-import { CLOUD_ENABLED, USERNAME_RE, register, login, sendReset, setNewPassword, germanError, currentUser, initCloud } from '../cloud.js';
+import { CLOUD_ENABLED, USERNAME_RE, register, login, sendReset, setNewPassword, germanError, currentUser, initCloud, myProfile, loginProviders, loginWith, chooseUsername, takeReturnError } from '../cloud.js';
+
+const GOOGLE_SVG = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+const APPLE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>';
+
+// In-App-Browser (WhatsApp, Instagram, TikTok ...): Google erlaubt dort keine Anmeldung
+const IN_APP = /FBAN|FBAV|Instagram|WhatsApp|TikTok|musical_ly|Snapchat|Line\/|; wv\)/i.test(navigator.userAgent);
+
+/** Knoepfe "Weiter mit Google/Apple". Erscheinen nur, wenn der Anbieter in Supabase eingeschaltet ist. */
+function socialLogin(mode) {
+  const box = h('div', { class: 'auth-social', hidden: true });
+  const err = errorBox();
+  const label = p => (p === 'google'
+    ? (mode === 'register' ? t('Mit Google registrieren', 'Sign up with Google') : t('Weiter mit Google', 'Continue with Google'))
+    : (mode === 'register' ? t('Mit Apple registrieren', 'Sign up with Apple') : t('Weiter mit Apple', 'Continue with Apple')));
+  loginProviders().then(list => {
+    if (!list.length) return;
+    const buttons = list.map(p => {
+      const text = h('span', {}, label(p));
+      const btn = h('button', {
+        type: 'button',
+        class: `btn btn-social btn-${p}`,
+        onclick: async () => {
+          err.hidden = true;
+          buttons.forEach(b => { b.disabled = true; });
+          text.textContent = t('Einen Moment ...', 'One moment ...');
+          try {
+            const inPage = await loginWith(p);
+            if (inPage) {
+              if (location.hash === '#/konto/weiter') window.dispatchEvent(new HashChangeEvent('hashchange'));
+              else location.hash = '#/konto/weiter';
+            }
+            // sonst: Browser geht gerade zu Google bzw. Apple
+          } catch (ex) {
+            showError(err, ex);
+            buttons.forEach(b => { b.disabled = false; });
+            text.textContent = label(p);
+          }
+        },
+      }, h('span', { class: 'btn-social-icon', html: p === 'google' ? GOOGLE_SVG : APPLE_SVG }), text);
+      return btn;
+    });
+    box.append(...[...buttons, err,
+      IN_APP ? h('p', { class: 'auth-small muted' }, t('Tipp: In WhatsApp, Instagram oder TikTok klappt die Anmeldung mit Google oft nicht. Öffne die Seite dann zuerst im Browser (Menü, „Im Browser öffnen“).', 'Tip: inside WhatsApp, Instagram or TikTok, signing in with Google often doesn\'t work. Open the page in your browser first (menu, “Open in browser”).')) : null,
+      h('p', { class: 'auth-or' }, h('span', {}, t('oder mit E-Mail', 'or with email')))].filter(Boolean));
+    box.hidden = false;
+  });
+  return box;
+}
 
 function field(label, input, hint) {
   return h('label', { class: 'field' }, h('span', {}, label), input, hint || null);
@@ -94,7 +142,7 @@ function renderLogin() {
   h('p', { class: 'auth-links' },
     h('a', { href: '#/konto/registrieren' }, t('Noch kein Konto? Registrieren', 'No account yet? Sign up')),
     h('a', { href: '#/konto/passwort' }, t('Passwort vergessen?', 'Forgot password?'))));
-  frame(t('Willkommen zurück', 'Welcome back'), t('Log dich ein, dann sind dein Fortschritt und deine Freunde da.', 'Log in and your progress and friends are there.'), form);
+  frame(t('Willkommen zurück', 'Welcome back'), t('Log dich ein, dann sind dein Fortschritt und deine Freunde da.', 'Log in and your progress and friends are there.'), h('div', {}, socialLogin('login'), form));
   email.focus();
 }
 
@@ -156,7 +204,7 @@ function renderRegister() {
   h('p', { class: 'auth-links' },
     h('a', { href: '#/konto' }, t('Schon ein Konto? Einloggen', 'Already have an account? Log in')),
     store.state.onboarded ? h('a', { href: '#/pfad' }, t('Später, erst mal lernen', 'Later, learn first')) : null));
-  frame(t('Konto erstellen', 'Create account'), t('Mit Konto lernst du auf jedem Gerät weiter und kannst Freunde hinzufügen.', 'With an account you can keep learning on any device and add friends.'), form, 'happy');
+  frame(t('Konto erstellen', 'Create account'), t('Mit Konto lernst du auf jedem Gerät weiter und kannst Freunde hinzufügen.', 'With an account you can keep learning on any device and add friends.'), h('div', {}, socialLogin('register'), form), 'happy');
   name.focus();
 }
 
@@ -210,6 +258,69 @@ function renderNewPassword() {
   pw.focus();
 }
 
+/** Zurueck von Google/Apple: eingeloggt? Dann ggf. Benutzernamen waehlen, sonst Fehler zeigen */
+function renderFinish() {
+  const u = currentUser();
+  if (!u) {
+    const why = takeReturnError();
+    frame(t('Anmeldung hat nicht geklappt', 'Sign-in didn\'t work'),
+      why ? germanError(why) : t('Die Anmeldung wurde abgebrochen oder ist abgelaufen. Versuch es nochmal.', 'The sign-in was cancelled or has expired. Please try again.'),
+      h('div', { class: 'auth-actions' }, h('a', { class: 'btn btn-go', href: '#/konto' }, t('Nochmal versuchen', 'Try again'))), 'think');
+    return;
+  }
+  if (u.needsUsername) { renderChooseUsername(); return; }
+  done(t('Eingeloggt', 'Logged in'));
+}
+
+/** Neues Google/Apple-Konto: Benutzernamen bestaetigen oder aendern */
+function renderChooseUsername() {
+  const prof = myProfile() || {};
+  const local = store.state.profile;
+  const suggested = USERNAME_RE.test(local.username || '') ? local.username : (prof.username || '');
+  const name = input({ type: 'text', maxlength: '40', placeholder: t('z. B. Alex', 'e.g. Alex'), autocomplete: 'given-name', value: local.name || prof.name || '' });
+  const user = input({ type: 'text', maxlength: '20', placeholder: 'z. B. alex_codet', autocapitalize: 'off', value: suggested });
+  const hintText = t('Damit finden dich deine Freunde. Kleinbuchstaben, Zahlen und _, 3 bis 20 Zeichen. Später im Profil änderbar.', 'This is how your friends find you. Lowercase letters, numbers and _, 3 to 20 characters. You can change it later in your profile.');
+  const userHint = h('small', { class: 'muted' }, hintText);
+  const err = errorBox();
+  const btn = h('button', { type: 'submit', class: 'btn btn-go' }, t('Los geht\'s', 'Let\'s go'));
+  user.addEventListener('input', () => {
+    user.value = user.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    userHint.className = 'muted';
+    userHint.textContent = hintText;
+  });
+  const form = h('form', {
+    class: 'auth-form',
+    onsubmit: async e => {
+      e.preventDefault();
+      err.hidden = true;
+      if (!USERNAME_RE.test(user.value)) {
+        userHint.className = 'is-bad';
+        userHint.textContent = t('Benutzername: 3 bis 20 Zeichen, nur Kleinbuchstaben, Zahlen und _.', 'Username: 3 to 20 characters, only lowercase letters, numbers and _.');
+        user.focus();
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = t('Einen Moment ...', 'One moment ...');
+      try {
+        await chooseUsername({ username: user.value, name: name.value });
+        toast(t('Konto erstellt. Willkommen!', 'Account created. Welcome!'));
+        location.hash = store.state.onboarded ? '#/freunde' : '#/start';
+      } catch (ex) {
+        showError(err, ex);
+        btn.disabled = false;
+        btn.textContent = t('Los geht\'s', 'Let\'s go');
+      }
+    },
+  },
+  field('Name', name),
+  field(t('Benutzername', 'Username'), user, userHint),
+  err,
+  h('p', { class: 'auth-small muted' }, t('Freunde sehen deinen Namen, Benutzernamen, Profilbild, Kurs und Fortschritt. Deine E-Mail sieht niemand.', 'Friends see your name, username, profile picture, course and progress. Nobody sees your email.')),
+  h('div', { class: 'auth-actions' }, btn));
+  frame(t('Fast fertig', 'Almost done'), t('Wie sollen dich deine Freunde finden?', 'How should your friends find you?'), form, 'happy');
+  user.focus();
+}
+
 function loading() {
   frame(t('Einen Moment ...', 'One moment ...'), t('Verbinde mit dem Konto-Dienst.', 'Connecting to the account service.'), h('div', { class: 'auth-spinner', 'aria-hidden': 'true' }), 'think');
 }
@@ -231,6 +342,8 @@ export async function renderAccount(sub) {
   if (!location.hash.startsWith('#/konto')) return; // inzwischen woanders hin
   if (!backend) { offline(sub); return; }
   if (sub === 'neues-passwort') { renderNewPassword(); return; }
+  if (sub === 'weiter') { renderFinish(); return; }
+  if (currentUser()?.needsUsername && sub !== 'passwort') { renderChooseUsername(); return; }
   if (currentUser() && sub !== 'passwort') { enterApp('#/profil'); return; }
   if (sub === 'registrieren') renderRegister();
   else if (sub === 'passwort') renderForgot();

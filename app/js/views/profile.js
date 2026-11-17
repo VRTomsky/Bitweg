@@ -12,7 +12,7 @@ import { GOALS } from '../personalize.js';
 import { imagePicker, pasteImagesInto } from '../imagepick.js';
 import { backupNow, backupInfo, listBackups, loadBackup, onBackupChange } from '../backup.js';
 import { IS_WEB } from '../env.js';
-import { CLOUD_ENABLED, currentUser, myProfile, saveProfile, logout, deleteAccount, changePassword, changeEmail, blockedIds, unblockUser, germanError, initCloud, profilesById } from '../cloud.js';
+import { CLOUD_ENABLED, currentUser, myProfile, saveProfile, logout, deleteAccount, changePassword, changeEmail, setFirstPassword, blockedIds, unblockUser, germanError, initCloud, profilesById } from '../cloud.js';
 
 const AGE_LABEL = { u13: t('Unter 13', 'Under 13'), '13-15': '13 bis 15', '16-18': '16 bis 18', '19+': t('19 oder älter', '19 or older') };
 const PRIOR_LABEL = { none: t('Noch nie programmiert', 'Never programmed'), blocks: t('Blöcke, z. B. Scratch', 'Blocks, e.g. Scratch'), python: 'Python', cfamily: t('C++, C# oder Java', 'C++, C# or Java'), other: t('Andere Sprache', 'Another language') };
@@ -322,12 +322,14 @@ function accountSection() {
     }
   }
   sec.append(
-    h('p', { class: 'account-line' }, h('span', { html: icon('check', 18) }), t(`Eingeloggt als ${user.email}`, `Logged in as ${user.email}`), myProfile() ? h('b', {}, ` · @${myProfile().username}`) : null),
+    h('p', { class: 'account-line' }, h('span', { html: icon('check', 18) }), t(`Eingeloggt als ${user.email}`, `Logged in as ${user.email}`), via(user), myProfile() ? h('b', {}, ` · @${myProfile().username}`) : null),
     h('p', { class: 'muted' }, t('Dein Fortschritt wird automatisch im Konto gespeichert. Auf einem anderen Gerät einfach einloggen.', 'Your progress is saved to your account automatically. On another device, just log in.')),
     h('div', { class: 'row-actions' },
       h('a', { class: 'btn btn-sky', href: '#/freunde' }, t('Freunde', 'Friends')),
-      h('button', { type: 'button', class: 'btn', onclick: () => openCredentials('password') }, t('Passwort ändern', 'Change password')),
-      h('button', { type: 'button', class: 'btn', onclick: () => openCredentials('email') }, t('E-Mail ändern', 'Change email')),
+      user.hasPassword === false
+        ? h('button', { type: 'button', class: 'btn', onclick: () => openCredentials('first') }, t('Passwort festlegen', 'Set a password'))
+        : h('button', { type: 'button', class: 'btn', onclick: () => openCredentials('password') }, t('Passwort ändern', 'Change password')),
+      user.hasPassword === false ? null : h('button', { type: 'button', class: 'btn', onclick: () => openCredentials('email') }, t('E-Mail ändern', 'Change email')),
       h('button', {
         type: 'button', class: 'btn btn-ghost',
         onclick: async () => {
@@ -358,11 +360,21 @@ function accountSection() {
   return sec;
 }
 
-/** Passwort oder E-Mail aendern. Beides nur mit dem aktuellen Passwort. */
+/** " · über Google" bzw. " · über Apple" hinter der E-Mail */
+function via(user) {
+  const p = (user.providers || []).find(x => x === 'google' || x === 'apple');
+  if (!p) return null;
+  const name = p === 'google' ? 'Google' : 'Apple';
+  return h('span', { class: 'muted' }, t(` (über ${name})`, ` (via ${name})`));
+}
+
+/** Passwort oder E-Mail aendern (beides nur mit dem aktuellen Passwort),
+ *  bzw. 'first': Google/Apple-Konto bekommt sein erstes Passwort. */
 function openCredentials(kind) {
-  const isPw = kind === 'password';
+  const first = kind === 'first';
+  const isPw = kind === 'password' || first;
   const pwInput = (ph, auto) => h('input', { class: 'text-input', type: 'password', autocomplete: auto, placeholder: ph, required: true });
-  const current = pwInput(t('Dein jetziges Passwort', 'Your current password'), 'current-password');
+  const current = first ? null : pwInput(t('Dein jetziges Passwort', 'Your current password'), 'current-password');
   const next = isPw ? pwInput(t('mindestens 8 Zeichen', 'at least 8 characters'), 'new-password') : null;
   const next2 = isPw ? pwInput(t('nochmal', 'again'), 'new-password') : null;
   const email = isPw ? null : h('input', { class: 'text-input', type: 'email', autocomplete: 'email', placeholder: 'neu@beispiel.de', required: true });
@@ -379,7 +391,12 @@ function openCredentials(kind) {
       ok.disabled = true;
       ok.textContent = t('Einen Moment ...', 'One moment ...');
       try {
-        if (isPw) {
+        if (first) {
+          await setFirstPassword(next.value);
+          close();
+          toast(t('Passwort festgelegt', 'Password set'), t(`Ab jetzt kannst du dich auch mit ${currentUser()?.email || 'deiner E-Mail'} und Passwort einloggen.`, `From now on you can also log in with ${currentUser()?.email || 'your email'} and password.`));
+          window.dispatchEvent(new HashChangeEvent('hashchange')); // Konto-Bereich neu zeichnen
+        } else if (isPw) {
           await changePassword(current.value, next.value);
           close();
           toast(t('Passwort geändert', 'Password changed'), t('Ab jetzt gilt das neue Passwort, auch auf deinen anderen Geräten.', 'The new password applies from now on, on your other devices too.'));
@@ -400,16 +417,17 @@ function openCredentials(kind) {
   },
   isPw ? null : h('label', { class: 'field' }, h('span', {}, t('Neue E-Mail-Adresse', 'New email address')), email,
     h('small', { class: 'muted' }, t(`Jetzt: ${currentUser()?.email || ''}`, `Now: ${currentUser()?.email || ''}`))),
-  h('label', { class: 'field' }, h('span', {}, isPw ? t('Aktuelles Passwort', 'Current password') : t('Passwort zur Bestätigung', 'Password to confirm')), current),
+  first ? h('p', { class: 'muted' }, t('Du bist über Google bzw. Apple angemeldet. Mit einem Passwort kannst du dich zusätzlich mit deiner E-Mail einloggen.', 'You signed in with Google or Apple. With a password you can also log in with your email.')) : null,
+  first ? null : h('label', { class: 'field' }, h('span', {}, isPw ? t('Aktuelles Passwort', 'Current password') : t('Passwort zur Bestätigung', 'Password to confirm')), current),
   isPw ? h('label', { class: 'field' }, h('span', {}, t('Neues Passwort', 'New password')), next) : null,
   isPw ? h('label', { class: 'field' }, h('span', {}, t('Neues Passwort wiederholen', 'Repeat new password')), next2) : null,
   err,
-  h('p', { class: 'auth-links' }, isPw ? h('a', { href: '#/konto/passwort', onclick: () => close() }, t('Altes Passwort vergessen?', 'Forgot your old password?')) : null),
+  h('p', { class: 'auth-links' }, isPw && !first ? h('a', { href: '#/konto/passwort', onclick: () => close() }, t('Altes Passwort vergessen?', 'Forgot your old password?')) : null),
   h('div', { class: 'row-actions' }, h('button', { type: 'button', class: 'btn', onclick: () => close() }, t('Abbrechen', 'Cancel')), ok));
-  const dlg = h('dialog', { class: 'confirm prof-dialog' }, h('h2', {}, isPw ? t('Passwort ändern', 'Change password') : t('E-Mail ändern', 'Change email')), form);
+  const dlg = h('dialog', { class: 'confirm prof-dialog' }, h('h2', {}, first ? t('Passwort festlegen', 'Set a password') : isPw ? t('Passwort ändern', 'Change password') : t('E-Mail ändern', 'Change email')), form);
   dlg.addEventListener('cancel', e => { e.preventDefault(); close(); });
   release = showModal(dlg);
-  (isPw ? current : email).focus();
+  (first ? next : isPw ? current : email).focus();
 }
 
 /** Online: keine Desktop-Sicherung, aber Datei-Export */

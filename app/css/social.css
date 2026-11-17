@@ -491,3 +491,14 @@ a, button, [role="button"], label { -webkit-tap-highlight-color: transparent; to
 dialog.confirm .row-actions.img-pick, .row-actions.img-pick { display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--s2); justify-content: flex-start; }
 .row-actions.img-pick > * { width: auto; flex: 0 0 auto; }
 dialog.confirm .row-actions.img-pick > .btn { width: auto; flex: 1 1 auto; margin: 0; }
+
+/* ---------------------------------------------------------------- Anmelden mit Google / Apple */
+.auth-social { display: grid; gap: var(--s3); margin-bottom: var(--s4); }
+.btn-social { width: 100%; text-transform: none; letter-spacing: 0; }
+.btn-social-icon { display: inline-grid; place-items: center; width: 20px; height: 20px; flex: none; }
+.btn-google { --b-bg: var(--surface); --b-fg: var(--ink); --b-edge: var(--rule-2); --b-border: var(--rule-2); }
+.btn-apple { --b-bg: #000; --b-fg: #fff; --b-edge: #333; --b-border: #000; }
+:root[data-theme="dark"] .btn-apple { --b-bg: #fff; --b-fg: #000; --b-edge: #9AA7B1; --b-border: #fff; }
+.btn-social:disabled .btn-social-icon { opacity: .5; }
+.auth-or { display: flex; align-items: center; gap: var(--s3); margin: var(--s2) 0 0; color: var(--ink-3); font-weight: 800; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .04em; }
+.auth-or::before, .auth-or::after { content: ''; flex: 1; height: 2px; background: var(--rule); }

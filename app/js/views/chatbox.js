@@ -2,7 +2,7 @@
 // Nachrichtenliste mit sauberem Scrollen, Eingabe, Anhaenge, Bildvorschau mit Zoom.
 
 import { t, locale } from '../i18n.js';
-import { h, toast, showModal } from '../util.js';
+import { h, toast, showModal, confirmDialog } from '../util.js';
 import { icon } from '../icons.js';
 import { germanError, attachmentUrl, attachmentsAvailable, ATTACH_TYPES, ATTACH_MAX } from '../cloud.js';
 
@@ -169,7 +169,8 @@ export function openLightbox(url, a) {
  * opts:
  *  meId, canWrite, placeholder, lockedText (wenn canWrite false), emptyText,
  *  send(body) -> Nachricht, sendFile(file, body) -> Nachricht,
- *  senderOf(m) -> { name, avatarEl } fuer Gruppen (sonst null), onReport(m) (optional)
+ *  senderOf(m) -> { name, avatarEl } fuer Gruppen (sonst null), onReport(m) (optional),
+ *  onDelete(m) (optional): eigene Nachricht loeschen, danach verschwindet sie aus der Liste
  */
 export function chatBox(opts) {
   const list = h('ol', { class: 'chat-list', 'aria-live': 'polite' });
@@ -214,13 +215,44 @@ export function chatBox(opts) {
     const who = !mine && opts.senderOf ? opts.senderOf(m) : null;
     const first = who && lastSender !== m.sender;
     lastSender = m.sender;
-    list.append(h('li', { class: `msg${mine ? ' is-mine' : ''}${m.attachment ? ' has-file' : ''}${who ? ' in-group' : ''}${first ? ' is-first' : ''}` },
+    list.append(h('li', { class: `msg${mine ? ' is-mine' : ''}${m.attachment ? ' has-file' : ''}${who ? ' in-group' : ''}${first ? ' is-first' : ''}`, 'data-id': String(m.id) },
       who && first ? h('span', { class: 'msg-who' }, who.avatarEl, h('b', {}, who.name)) : null,
       m.attachment ? attachmentView(m.attachment) : null,
       m.body ? h('p', {}, m.body) : null,
       h('small', {}, timeText(m.created_at),
-        !mine && opts.onReport ? h('button', { type: 'button', class: 'msg-report', title: t('Nachricht melden', 'Report message'), onclick: () => opts.onReport(m) }, t('melden', 'report')) : null)));
+        !mine && opts.onReport ? h('button', { type: 'button', class: 'msg-report', title: t('Nachricht melden', 'Report message'), onclick: () => opts.onReport(m) }, t('melden', 'report')) : null,
+        mine && opts.onDelete ? h('button', { type: 'button', class: 'msg-report msg-delete', title: t('Nachricht löschen', 'Delete message'), onclick: () => askDelete(m) }, t('löschen', 'delete')) : null)));
     if (live) keepBottom(); else toBottom();
+  }
+
+  async function askDelete(m) {
+    const what = m.attachment ? (/^image\//.test(m.attachment.type || '') ? t('Nachricht und Bild', 'Message and image') : t('Nachricht und Datei', 'Message and file')) : t('Nachricht', 'Message');
+    if (!(await confirmDialog({
+      title: t(`${what} löschen?`, `Delete ${what.toLowerCase()}?`),
+      text: t('Sie verschwindet für alle im Chat. Das kann man nicht rückgängig machen.', 'It disappears for everyone in the chat. This can\'t be undone.'),
+      ok: t('Löschen', 'Delete'), danger: true,
+    }))) return;
+    try {
+      await opts.onDelete(m);
+      remove(m.id);
+    } catch (err) {
+      toast(t('Nicht gelöscht', 'Not deleted'), germanError(err));
+    }
+  }
+
+  /** Nachricht aus der Liste nehmen (eigenes Loeschen oder live von der anderen Seite) */
+  function remove(id) {
+    const li = list.querySelector(`li.msg[data-id="${CSS.escape(String(id))}"]`);
+    if (!li) return;
+    li.remove();
+    lastSender = null;   // Absender-Kopf in Gruppen beim naechsten Eintrag wieder zeigen
+  }
+
+  /** Alle Nachrichten entfernen (Admin hat den Chat geleert) */
+  function clear(emptyText) {
+    list.querySelectorAll('li.msg').forEach(li => li.remove());
+    lastSender = null;
+    if (emptyText) empty(emptyText);
   }
 
   function empty(textValue) {
@@ -296,5 +328,5 @@ export function chatBox(opts) {
     ondrop: e => { e.preventDefault(); e.currentTarget.classList.remove('is-drop'); sendFile(e.dataTransfer?.files?.[0]); },
   }, clipBtn, fileInput, text, sendBtn);
 
-  return { list, form, add, empty, toBottom, focus: () => text.focus(), error: msg => list.append(h('li', { class: 'muted' }, msg)) };
+  return { list, form, add, remove, clear, empty, toBottom, focus: () => text.focus(), error: msg => list.append(h('li', { class: 'muted' }, msg)) };
 }

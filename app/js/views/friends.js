@@ -16,6 +16,7 @@ import {
   blockUser, reportUser, loadThread, sendMessage, markThreadRead, conversations,
   sendAttachment, attachmentUrl, attachmentsAvailable, ATTACH_TYPES, ATTACH_MAX,
   cheer, shareStreak, unseenNudges, markNudgesSeen, nudgeText, onLive, refreshCounts,
+  deleteMessage, amIAdmin, clearChat,
 } from '../cloud.js';
 
 /* ---------------------------------------------------------------- Bausteine */
@@ -394,20 +395,46 @@ export async function renderChat(main, username) {
     send: body => sendMessage(p.id, body),
     sendFile: (file, body) => sendAttachment(p.id, file, body),
     onReport: m => reportDialog(p, m.id),
+    onDelete: m => deleteMessage(m),
   });
+  const emptyText = friends ? t('Noch keine Nachrichten. Schreib als Erstes!', 'No messages yet. Write first!') : t('Ihr müsst befreundet sein, um euch zu schreiben.', 'You need to be friends to message each other.');
+
+  // Nur der Bitweg-Admin: ganzen Chat leeren (fuer beide)
+  const clearBtn = h('button', {
+    type: 'button', class: 'icon-btn', hidden: true,
+    title: t('Chat leeren (Admin)', 'Clear chat (admin)'), 'aria-label': t('Chat leeren', 'Clear chat'), html: icon('trash', 22),
+    onclick: async () => {
+      if (!(await confirmDialog({
+        title: t(`Chat mit ${displayName(p)} leeren?`, `Clear chat with ${displayName(p)}?`),
+        text: t('Alle Nachrichten, Bilder und Dateien in diesem Chat werden für euch beide gelöscht. Das kann man nicht rückgängig machen.', 'All messages, images and files in this chat are deleted for both of you. This can\'t be undone.'),
+        ok: t('Chat leeren', 'Clear chat'), danger: true,
+      }))) return;
+      clearBtn.disabled = true;
+      try {
+        const n = await clearChat(p.id);
+        box.clear(emptyText);
+        toast(t('Chat geleert', 'Chat cleared'), t(`${n} ${n === 1 ? 'Nachricht' : 'Nachrichten'} gelöscht.`, `${n} ${n === 1 ? 'message' : 'messages'} deleted.`));
+      } catch (err) {
+        toast(t('Nicht geleert', 'Not cleared'), germanError(err));
+      }
+      clearBtn.disabled = false;
+    },
+  });
+  amIAdmin().then(yes => { clearBtn.hidden = !yes; });
 
   page.append(
     h('header', { class: 'chat-head' },
       h('a', { class: 'icon-btn', href: '#/freunde', 'aria-label': t('Zurück zu den Freunden', 'Back to friends'), html: icon('back', 22) }),
       h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 44), h('span', {}, h('b', {}, displayName(p)), h('small', {}, `@${p.username} · ${activity(p)}`))),
-      friends ? h('button', { type: 'button', class: 'icon-btn', title: t('Anfeuern', 'Cheer on'), 'aria-label': t('Anfeuern', 'Cheer on'), onclick: () => guard(() => cheer(p.id), t(`${displayName(p)} angefeuert`, `Cheered on ${displayName(p)}`)), html: solidIcon('bolt', 22) }) : null),
+      friends ? h('button', { type: 'button', class: 'icon-btn', title: t('Anfeuern', 'Cheer on'), 'aria-label': t('Anfeuern', 'Cheer on'), onclick: () => guard(() => cheer(p.id), t(`${displayName(p)} angefeuert`, `Cheered on ${displayName(p)}`)), html: solidIcon('bolt', 22) }) : null,
+      clearBtn),
     box.list,
     box.form,
     h('p', { class: 'muted social-note' }, t('Nachrichten sehen nur ihr beide. Sei nett. Wenn dich jemand belästigt: melden, blockieren und einem Erwachsenen Bescheid sagen.', 'Only you two can see the messages. Be nice. If someone harasses you: report, block and tell an adult.')));
 
   try {
     (await loadThread(p.id)).forEach(m => box.add(m));
-    box.empty(friends ? t('Noch keine Nachrichten. Schreib als Erstes!', 'No messages yet. Write first!') : t('Ihr müsst befreundet sein, um euch zu schreiben.', 'You need to be friends to message each other.'));
+    box.empty(emptyText);
     box.toBottom();
     markThreadRead(p.id).catch(() => {});
   } catch (err) {
@@ -418,6 +445,11 @@ export async function renderChat(main, username) {
     if (kind === 'message' && row.sender === p.id) {
       box.add(row, { live: true });
       markThreadRead(p.id).catch(() => {});
+    }
+    // Die andere Seite hat geloescht (bzw. der Admin hat geleert): nur die id kommt mit
+    if (kind === 'message_deleted' && row?.id != null) {
+      box.remove(row.id);
+      if (!box.list.querySelector('li.msg')) box.empty(emptyText);
     }
   });
   box.focus();

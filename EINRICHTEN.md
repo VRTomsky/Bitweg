@@ -137,6 +137,24 @@ Braucht ein Konto im **Apple Developer Program** (https://developer.apple.com/pr
 - **In WhatsApp, Instagram und TikTok** blockt Google die Anmeldung im eingebauten Browser. Die App zeigt dort einen Hinweis, die Seite erst im richtigen Browser zu öffnen.
 - **Lokale Version** (`start.bat`): Die Knöpfe gibt es dort auch, weil `http://127.0.0.1:5741/` schon bei den Redirect URLs steht (Schritt 3).
 
+## 10. Nachrichten löschen und Chats leeren (Erweiterung)
+
+Erst nach Schritt 7 ausführen.
+
+1. **SQL Editor**, **New query**, Inhalt von `supabase/06-nachrichten-loeschen.sql` einfügen, **Run**.
+2. Dich selbst zum Admin machen. Neue Query, `DEIN_BENUTZERNAME` durch deinen Benutzernamen ersetzen (ohne @, steht im Profil unter deinem Namen), **Run**:
+   ```sql
+   insert into public.app_admins (user_id)
+   select id from public.profiles where username = 'DEIN_BENUTZERNAME'
+   on conflict do nothing;
+   ```
+   Prüfen: `select p.username from public.app_admins a join public.profiles p on p.id = a.user_id;` muss deinen Namen zeigen.
+
+Danach:
+- **Alle** sehen an ihren eigenen Nachrichten „löschen“. Die Nachricht verschwindet samt Bild oder Datei für alle im Chat bzw. in der Gruppe.
+- **Nur der Admin** sieht im Chat oben rechts einen Mülleimer: **Chat leeren** löscht alle Nachrichten, Bilder und Dateien in diesem Chat für beide.
+- Admin wird man nur über den SQL Editor, nie über die App.
+
 ## 9. Datenschutzerklärung
 
 Liegt unter `app/datenschutz.html` (online: https://bitweg.de/datenschutz.html) und ist von Login, Registrierung und Profil verlinkt. Bei Google steht genau diese Adresse auf der **Branding**-Seite. Wenn Bitweg neue Dienste bekommt, muss die Seite angepasst werden.

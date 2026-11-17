@@ -12,6 +12,7 @@ import { GOALS } from '../personalize.js';
 import { imagePicker, pasteImagesInto } from '../imagepick.js';
 import { backupNow, backupInfo, listBackups, loadBackup, onBackupChange } from '../backup.js';
 import { IS_WEB } from '../env.js';
+import { connectedAccounts } from './providers.js';
 import { CLOUD_ENABLED, currentUser, myProfile, saveProfile, logout, deleteAccount, changePassword, changeEmail, setFirstPassword, blockedIds, unblockUser, germanError, initCloud, profilesById } from '../cloud.js';
 
 const AGE_LABEL = { u13: t('Unter 13', 'Under 13'), '13-15': '13 bis 15', '16-18': '16 bis 18', '19+': t('19 oder älter', '19 or older') };
@@ -100,6 +101,8 @@ function openEditor() {
     h('label', { class: 'field' }, h('span', {}, 'Name'), nameIn),
     h('label', { class: 'field' }, h('span', {}, 'Benutzername'), userIn, userHint),
     h('label', { class: 'field' }, h('span', {}, 'Über mich'), bioIn),
+    // Google/Apple zum Konto hinzufuegen; vorher werden offene Aenderungen gespeichert
+    currentUser() ? connectedAccounts({ beforeLeave: () => apply() }) : null,
     h('p', { class: 'muted', style: { fontSize: 'var(--text-sm)' } }, currentUser()
       ? 'Name, Benutzername, Bilder und „Über mich“ sehen alle eingeloggten Nutzer, z. B. wenn sie dich suchen.'
       : 'Alles bleibt in diesem Browser und landet mit in der Sicherung.'),
@@ -112,24 +115,22 @@ function openEditor() {
     release();
     dlg.remove();
   }
-  async function save(e) {
+  /** Eingaben pruefen und speichern, ohne das Fenster zu schliessen. Wirft bei Fehlern. */
+  async function apply() {
     const username = userIn.value.trim().toLowerCase();
     if ((username || currentUser()) && !/^[a-z0-9_]{3,20}$/.test(username)) {
       userHint.textContent = 'Nur Kleinbuchstaben, Zahlen und _, 3 bis 20 Zeichen.';
       userHint.classList.add('is-bad');
       userIn.focus();
-      return;
+      throw new Error(t('Benutzername: 3 bis 20 Zeichen, nur Kleinbuchstaben, Zahlen und _.', 'Username: 3 to 20 characters, only lowercase letters, numbers and _.'));
     }
     if (currentUser()) {
-      const btn = e?.currentTarget;
-      if (btn) btn.disabled = true;
       try {
         await saveProfile({ username, name: nameIn.value.trim(), bio: bioIn.value.trim(), avatar: draft.avatar, banner: draft.banner });
       } catch (err) {
-        if (btn) btn.disabled = false;
         userHint.textContent = germanError(err);
         userHint.classList.add('is-bad');
-        return;
+        throw err;
       }
     }
     store.update(s => {
@@ -141,6 +142,11 @@ function openEditor() {
         banner: draft.banner,
       });
     });
+  }
+  async function save(e) {
+    const btn = e?.currentTarget;
+    if (btn) btn.disabled = true;
+    try { await apply(); } catch { if (btn) btn.disabled = false; return; }
     close();
     toast('Profil gespeichert');
     location.hash = '#/profil';
@@ -339,6 +345,7 @@ function accountSection() {
           location.hash = '#/konto';
         },
       }, h('span', { html: icon('logout', 16) }), t('Ausloggen', 'Log out'))),
+    connectedAccounts(),
     h('details', { class: 'account-more', ontoggle: e => { if (e.currentTarget.open) paintBlocked(); } },
       h('summary', {}, t('Blockierte Nutzer und Konto löschen', 'Blocked users and deleting your account')),
       h('p', { class: 'eyebrow' }, t('Blockiert', 'Blocked')),
@@ -440,7 +447,8 @@ function webDataSection() {
     h('div', { class: 'row-actions' },
       h('button', { type: 'button', class: 'btn btn-small', onclick: exportData }, h('span', { html: icon('copy', 16) }), t('Als Datei herunterladen', 'Download as file')),
       h('label', { class: 'btn btn-small' }, t('Datei laden', 'Load file'), h('input', { type: 'file', accept: 'application/json,.json', class: 'sr-only', onchange: importData })),
-      h('button', { type: 'button', class: 'btn btn-small btn-bad', onclick: resetData }, t('Alles zurücksetzen', 'Reset everything'))));
+      h('button', { type: 'button', class: 'btn btn-small btn-bad', onclick: resetData }, t('Alles zurücksetzen', 'Reset everything'))),
+    h('p', { class: 'muted', style: { marginTop: 'var(--s4)' } }, h('a', { href: 'datenschutz.html' }, t('Datenschutzerklärung', 'Privacy policy'))));
 }
 
 /* ---------------------------------------------------------------- Seite */

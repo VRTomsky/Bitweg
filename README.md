@@ -28,6 +28,9 @@ Wie C++ und VS Code eingerichtet werden, steht in der App unter **Werkstatt**.
 
 ## Datenschutz
 
+Ausführlich: https://bitweg.de/datenschutz.html
+
+
 - Ohne Konto bleibt alles im Browser.
 - Mit Konto speichert Supabase E-Mail (nur zum Einloggen), Profil, Lernstand, Freundschaften und Nachrichten. Passwörter speichert nur Supabase, verschlüsselt. Bei „Weiter mit Google/Apple“ bekommt Bitweg von dort nur E-Mail und Namen, kein Passwort.
 - Nachrichten können nur Freunde schicken und nur die beiden lesen. Gruppen lesen nur ihre Mitglieder, hinzufügen darf man nur eigene Freunde. Das prüft die Datenbank selbst.

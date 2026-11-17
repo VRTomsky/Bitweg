@@ -700,6 +700,7 @@ export async function loginWith(provider) {
   try { sessionStorage.setItem(OAUTH_KEY, 'login'); } catch { /* egal */ }
   const res = await a.signInWith(provider);
   if (res?.redirected) return false;
+  try { sessionStorage.removeItem(OAUTH_KEY); } catch { /* egal */ }
   // Test-Attrappe: ohne Umweg eingeloggt
   manualAuth = true;
   try {

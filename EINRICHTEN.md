@@ -101,6 +101,8 @@ Ohne diesen Schritt scheitert das erste Anmelden mit Google/Apple mit „Databas
 
 Der Clientschlüssel kommt nur in Supabase, nicht in die App und nicht ins Repo.
 
+5. Auf derselben Seite (**Sign In / Providers**) **Allow manual linking** einschalten und speichern. Damit kann man unter **Profil bearbeiten → Anmelden mit** Google bzw. Apple zu einem bestehenden E-Mail-Konto hinzufügen (und wieder trennen).
+
 ### 8c. Apple
 
 Braucht ein Konto im **Apple Developer Program** (https://developer.apple.com/programs, 99 $ pro Jahr).
@@ -128,11 +130,20 @@ Braucht ein Konto im **Apple Developer Program** (https://developer.apple.com/pr
 
 ### Gut zu wissen
 
+- **Konto verbinden:** Wer sich mit E-Mail registriert hat, kann unter **Profil bearbeiten → Anmelden mit** auf **Verbinden** tippen. Danach geht der Login auch mit Google bzw. Apple, sogar wenn dort eine andere E-Mail-Adresse hinterlegt ist. **Trennen** geht nur, solange noch eine andere Anmeldung übrig bleibt.
 - **Gleiche E-Mail = gleiches Konto.** Wer schon mit E-Mail und Passwort registriert ist und dann „Weiter mit Google“ mit derselben Adresse nimmt, landet im selben Konto.
 - **Apple kann die E-Mail verstecken.** Dann bekommt Bitweg eine Adresse wie `abc123@privaterelay.appleid.com`. Das ist normal, die App braucht die echte Adresse nicht.
 - **Google/Apple-Konten haben erst mal kein Passwort.** Unter **Profil → Konto** gibt es dafür „Passwort festlegen“. Danach geht auch der Login mit E-Mail und Passwort.
 - **In WhatsApp, Instagram und TikTok** blockt Google die Anmeldung im eingebauten Browser. Die App zeigt dort einen Hinweis, die Seite erst im richtigen Browser zu öffnen.
 - **Lokale Version** (`start.bat`): Die Knöpfe gibt es dort auch, weil `http://127.0.0.1:5741/` schon bei den Redirect URLs steht (Schritt 3).
+
+## 9. Datenschutzerklärung
+
+Liegt unter `app/datenschutz.html` (online: https://bitweg.de/datenschutz.html) und ist von Login, Registrierung und Profil verlinkt. Bei Google steht genau diese Adresse auf der **Branding**-Seite. Wenn Bitweg neue Dienste bekommt, muss die Seite angepasst werden.
+
+Supabase: Den Vertrag zur Auftragsverarbeitung (DPA) kannst du im Dashboard unter **Organization Settings → Legal Documents** anfordern bzw. unterschreiben.
+
+Die Schriften (Fredoka, Nunito, JetBrains Mono) liegen in `app/fonts/` auf bitweg.de selbst und werden nicht mehr von Google Fonts geladen.
 
 ## E-Mail und Passwort ändern
 

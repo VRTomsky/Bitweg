@@ -59,7 +59,37 @@ export function createMockBackend() {
   }
 
   return {
-    async session() { const u = me(); return delay(u ? { id: u.id, email: u.email } : null); },
+    async session() {
+      const u = me();
+      return delay(u ? { id: u.id, email: u.email, providers: [u.provider || 'email'], needsUsername: Boolean(u.provider) && !u.username_set, hasPassword: Boolean(u.password) } : null);
+    },
+    async providers() { return delay(['google', 'apple']); },
+    // Simuliert Google/Apple: Testkonto mit ausgedachtem Benutzernamen, ohne Passwort
+    async signInWith(provider) {
+      const email = `${provider}@test.local`;
+      let u = Object.values(db.users).find(x => x.email === email);
+      if (!u) {
+        const id = `u_${provider}`;
+        let username = provider === 'google' ? 'gina_gmail' : 'apple_nutzer';
+        while (Object.values(db.users).some(x => x.username === username)) username = `${username.slice(0, 14)}_${Math.floor(1000 + Math.random() * 9000)}`;
+        u = db.users[id] = { id, email, password: null, provider, username_set: false, username, name: provider === 'google' ? 'Gina Gmail' : '', bio: '', avatar: null, banner: null, xp: 0, streak: 0, last_active: null, summary: {}, created_at: day(0) };
+        db.friendships.push({ requester: 'u_mia', addressee: id, status: 'pending', created_at: day(0) });
+      }
+      db.session = u.id;
+      save();
+      return delay({ redirected: false });
+    },
+    async identities() { const u = me(); return delay([u.provider || 'email', ...(u.linked || [])]); },
+    async linkWith(provider) {
+      const u = me();
+      if (u.provider === provider) return delay({ redirected: false });
+      u.linked = [...new Set([...(u.linked || []), provider])];
+      save();
+      return delay({ redirected: false });
+    },
+    async unlink(provider) { const u = me(); u.linked = (u.linked || []).filter(p => p !== provider); save(); return delay(); },
+    async markUsernameChosen() { me().username_set = true; save(); return delay(); },
+    async setFirstPassword(pw) { me().password = pw; save(); return delay(); },
     onAuth(cb) { authCbs.push(cb); },
     async signUp(email, password, username, name) {
       if (Object.values(db.users).some(u => u.email === email)) throw new Error('User already registered');

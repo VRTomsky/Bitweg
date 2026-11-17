@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Datenschutz · Bitweg</title>
+  <meta name="description" content="Datenschutzerklärung von Bitweg">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="css/tokens.css">
+  <script>
+    try {
+      var saved = JSON.parse(localStorage.getItem('laufzeit.v1') || '{}');
+      var theme = (saved.settings && saved.settings.theme) || 'auto';
+      if (theme === 'auto') theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+    } catch (e) { document.documentElement.dataset.theme = 'light'; }
+  </script>
+  <style>
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 600; line-height: 1.6; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1, h2 { font-family: Fredoka, Nunito, system-ui, sans-serif; line-height: 1.2; }
+    h1 { font-size: 2rem; margin: 16px 0 8px; }
+    h2 { font-size: 1.25rem; margin: 32px 0 8px; }
+    a { color: var(--sky-ink, #1899D6); }
+    .back { font-weight: 800; text-decoration: none; }
+    .muted { color: var(--ink-3); }
+    ul { padding-left: 1.2em; }
+    address { font-style: normal; }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← Zurück zu Bitweg</a>
+  <h1>Datenschutzerklärung</h1>
+  <p class="muted">Stand: 17. November 2026</p>
+
+  <h2>1. Wer ist verantwortlich?</h2>
+  <address>
+    Tom Schulz<br>
+    Hofmattenstraße 8<br>
+    78132 Hornberg<br>
+    Deutschland
+  </address>
+  <p>Bitweg ist ein privates, nicht kommerzielles Projekt. Es gibt keine Werbung, kein Tracking und keine Analyse-Werkzeuge.</p>
+
+  <h2>2. Ohne Konto</h2>
+  <p>Wenn du Bitweg ohne Konto nutzt, bleibt dein Lernstand (Fortschritt, XP, Einstellungen, Profilangaben) nur im Speicher deines Browsers (<em>localStorage</em>) auf deinem Gerät. Er wird nicht an uns geschickt. Du kannst ihn jederzeit unter „Profil“ zurücksetzen oder über die Browser-Einstellungen löschen.</p>
+  <p>Cookies zu Werbe- oder Analysezwecken setzt Bitweg nicht. Was im Browser gespeichert wird, ist für die Funktion der App nötig (§ 25 Abs. 2 Nr. 2 TDDDG).</p>
+
+  <h2>3. Hosting der Webseite</h2>
+  <p>Die Webseite wird über <strong>GitHub Pages</strong> ausgeliefert (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie deine IP-Adresse, Datum und Uhrzeit, die aufgerufene Datei und Browser-Angaben, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren, funktionierenden Webseite (Art. 6 Abs. 1 lit. f DSGVO). GitHub ist unter dem EU-US Data Privacy Framework zertifiziert. Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+
+  <h2>4. Konto, Freunde und Nachrichten</h2>
+  <p>Für Konten nutzt Bitweg den Dienst <strong>Supabase</strong> (Supabase Inc.) als Auftragsverarbeiter (Art. 28 DSGVO). Die Datenbank liegt in einem Rechenzentrum in <strong>Frankfurt am Main</strong>. Mehr: <a href="https://supabase.com/privacy" rel="noopener">Datenschutzerklärung von Supabase</a>. Wenn du ein Konto erstellst, werden gespeichert:</p>
+  <ul>
+    <li>E-Mail-Adresse (nur zum Einloggen und für „Passwort vergessen“, andere Nutzer sehen sie nicht)</li>
+    <li>Passwort, nur verschlüsselt (als Hash), falls du eins festlegst</li>
+    <li>Profil: Benutzername, Name, „Über mich“, Profil- und Titelbild</li>
+    <li>Lernstand: Fortschritt, XP, Serie, Abzeichen und Einstellungen</li>
+    <li>Freundschaften, Blockierungen und Meldungen</li>
+    <li>Nachrichten, Gruppen, Gruppennachrichten und Anhänge (Bilder, Dateien)</li>
+    <li>technische Anmeldedaten wie Zeitpunkt der Anmeldung und IP-Adresse (bei Supabase, für Sicherheit und Missbrauchsschutz)</li>
+  </ul>
+  <p>Wer was sehen darf: Name, Benutzername, Bilder, „Über mich“, Kurs und Fortschritt sehen andere eingeloggte Nutzer. Nachrichten lesen nur Absender und Empfänger, Gruppennachrichten nur die Mitglieder der Gruppe. Das prüft die Datenbank selbst.</p>
+  <p>Rechtsgrundlage ist die Bereitstellung der Funktionen, die du mit dem Konto nutzen willst (Art. 6 Abs. 1 lit. b DSGVO). Die Daten bleiben gespeichert, bis du dein Konto löschst. Das geht jederzeit unter <strong>Profil → Konto → Konto löschen</strong>. Dabei werden Profil, Lernstand, Freundschaften und Nachrichten endgültig gelöscht.</p>
+
+  <h2>5. Anmelden mit Google oder Apple</h2>
+  <p>Du kannst dich statt mit E-Mail und Passwort auch mit deinem Google-Konto (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) oder deinem Apple-Konto (Apple Distribution International Ltd., Hollyhill Industrial Estate, Hollyhill, Cork, Irland) anmelden oder es mit deinem Bitweg-Konto verbinden. Dann wirst du zur Anmeldeseite von Google bzw. Apple weitergeleitet. Bitweg bekommt von dort nur deine E-Mail-Adresse, deinen Namen und eine eindeutige Kennung. Dein Passwort bei Google oder Apple erfährt Bitweg nie. Bei Apple kannst du deine E-Mail-Adresse verbergen, dann bekommt Bitweg eine Weiterleitungsadresse von Apple.</p>
+  <p>Google bzw. Apple erfahren dabei, dass du dich bei Bitweg anmeldest. Das passiert nur, wenn du den Knopf „Weiter mit Google/Apple“ bzw. „Verbinden“ selbst antippst. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO. Mehr: <a href="https://policies.google.com/privacy?hl=de" rel="noopener">Datenschutzerklärung von Google</a>, <a href="https://www.apple.com/de/legal/privacy/" rel="noopener">Datenschutzerklärung von Apple</a>.</p>
+
+  <h2>6. Python im Browser und Programm-Bibliotheken</h2>
+  <p>Damit Python-Code direkt im Browser läuft, lädt Bitweg beim ersten Ausführen die Python-Umgebung <em>Pyodide</em> vom Dienst <strong>jsDelivr</strong> (cdn.jsdelivr.net). Von dort kommt auch die Programm-Bibliothek für die Konto-Anmeldung. Dabei wird deine IP-Adresse an jsDelivr bzw. dessen Netzwerk-Partner (u. a. Cloudflare und Fastly, auch in den USA) übertragen, damit die Dateien ausgeliefert werden können. Rechtsgrundlage ist unser berechtigtes Interesse, die Lern-Funktionen schnell und zuverlässig bereitzustellen (Art. 6 Abs. 1 lit. f DSGVO). Mehr: <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" rel="noopener">Datenschutzerklärung von jsDelivr</a>.</p>
+  <p>Schriftarten liegen direkt auf bitweg.de, dafür werden keine Daten an Dritte geschickt.</p>
+
+  <h2>7. Deine Rechte</h2>
+  <p>Du hast das Recht auf Auskunft über deine gespeicherten Daten (Art. 15 DSGVO), auf Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21). Vieles kannst du direkt in der App erledigen: Profil bearbeiten, Lernstand als Datei herunterladen, Konto löschen. Für alles andere genügt eine Nachricht an die Adresse oben.</p>
+  <p>Du kannst dich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel beim <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener">Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg</a>.</p>
+
+  <h2>8. Änderungen</h2>
+  <p>Wenn Bitweg neue Funktionen bekommt, passen wir diese Erklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
+</main>
+</body>
+</html>

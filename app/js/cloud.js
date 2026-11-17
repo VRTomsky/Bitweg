@@ -18,6 +18,8 @@ export const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 const IMG_RE = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/;
 
 const MOCK = new URLSearchParams(location.search).has('mock');
+const OAUTH_KEY = 'bitweg.oauth';             // Rueckkehr von Google/Apple erwartet
+export const PROVIDERS = ['google', 'apple'];
 export const CLOUD_ENABLED = MOCK || Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 let api = null;           // Backend (echtes Supabase oder Test-Attrappe)
@@ -52,6 +54,12 @@ export function germanError(err) {
   if (/invalid.*email|Unable to validate email/i.test(m)) return t('Diese E-Mail-Adresse sieht nicht richtig aus.', 'This email address doesn\'t look right.');
   if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return t('Keine Verbindung zum Server. Bist du online?', 'No connection to the server. Are you online?');
   if (/row-level security|violates/i.test(m)) return t('Das ist nicht erlaubt (z. B. nur unter Freunden möglich).', 'That\'s not allowed (e.g. only possible between friends).');
+  if (/identity_already_exists|already linked|identity.*already exists/i.test(m)) return t('Dieses Konto ist schon mit einem anderen Bitweg-Konto verbunden. Log dich dort aus oder nimm ein anderes.', 'This account is already connected to another Bitweg account. Log out there or use another one.');
+  if (/manual.?linking/i.test(m)) return t('Konten verbinden ist noch nicht eingeschaltet (Supabase: „Allow manual linking“).', 'Connecting accounts isn\'t switched on yet (Supabase: “Allow manual linking”).');
+  if (/single_identity|at least 1 identity|only identity/i.test(m)) return t('Das ist deine einzige Anmeldung. Leg erst ein Passwort fest oder verbinde ein anderes Konto.', 'That\'s your only way to log in. Set a password or connect another account first.');
+  if (/provider is not enabled|Unsupported provider/i.test(m)) return t('Diese Anmeldung ist gerade nicht eingeschaltet. Nimm E-Mail und Passwort.', 'This sign-in option isn\'t switched on right now. Use email and password.');
+  if (/access_denied|user_cancel/i.test(m)) return t('Anmeldung abgebrochen.', 'Sign-in cancelled.');
+  if (/reauthenticat/i.test(m)) return t('Aus Sicherheitsgründen: einmal aus- und wieder einloggen, dann nochmal versuchen.', 'For security: log out and back in once, then try again.');
   if (/same_password|different from the old/i.test(m)) return t('Das neue Passwort muss anders sein als das alte.', 'The new password must be different from the old one.');
   return m || t('Etwas ist schiefgegangen.', 'Something went wrong.');
 }
@@ -78,6 +86,21 @@ function tabLock(_name, _timeout, fn) {
 
 /* ================================================================ Supabase-Backend */
 
+/** Nutzer aus Supabase in die schlanke Form der App bringen */
+function toUser(u) {
+  if (!u) return null;
+  const meta = u.user_metadata || {};
+  const providers = u.app_metadata?.providers || (u.app_metadata?.provider ? [u.app_metadata.provider] : ['email']);
+  return {
+    id: u.id,
+    email: u.email,
+    providers,
+    // E-Mail-Konten haben den Benutzernamen bei der Registrierung gewaehlt, Google/Apple-Konten noch nicht
+    needsUsername: !meta.username && !meta.username_set,
+    hasPassword: providers.includes('email') || Boolean(meta.password_set),
+  };
+}
+
 async function supabaseBackend() {
   const { createClient } = await withTimeout(import(SUPABASE_JS), 25000);
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -98,14 +121,45 @@ async function supabaseBackend() {
   const self = {
     async session() {
       const { data } = await withTimeout(sb.auth.getSession(), 15000);
-      return data.session?.user ? { id: data.session.user.id, email: data.session.user.email } : null;
+      return toUser(data.session?.user);
     },
     onAuth(cb) {
       sb.auth.onAuthStateChange((event, session) => {
         // Supabase-Hinweis: im Callback nicht direkt weitere Abfragen starten
-        setTimeout(() => cb(event, session?.user ? { id: session.user.id, email: session.user.email } : null), 0);
+        setTimeout(() => cb(event, toUser(session?.user)), 0);
       });
     },
+    /** Welche Anbieter sind im Supabase-Dashboard eingeschaltet? */
+    async providers() {
+      const res = await withTimeout(fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } }), 10000);
+      if (!res.ok) throw new Error(`settings ${res.status}`);
+      const ext = (await res.json()).external || {};
+      return PROVIDERS.filter(p => ext[p] === true);
+    },
+    /** Leitet zu Google bzw. Apple weiter, die Seite wird dabei verlassen */
+    async signInWith(provider) {
+      must(await sb.auth.signInWithOAuth({ provider, options: { redirectTo: redirect() } }));
+      return { redirected: true };
+    },
+    /** Mit welchen Anbietern kann sich dieses Konto anmelden? (frisch vom Server) */
+    async identities() {
+      const data = must(await withTimeout(sb.auth.getUserIdentities(), 15000));
+      return (data.identities || []).map(i => i.provider);
+    },
+    /** Google/Apple zum eingeloggten Konto hinzufuegen. Leitet weiter, die Seite wird verlassen. */
+    async linkWith(provider) {
+      must(await sb.auth.linkIdentity({ provider, options: { redirectTo: redirect() } }));
+      return { redirected: true };
+    },
+    async unlink(provider) {
+      const data = must(await withTimeout(sb.auth.getUserIdentities(), 15000));
+      const identity = (data.identities || []).find(i => i.provider === provider);
+      if (!identity) return;
+      must(await withTimeout(sb.auth.unlinkIdentity(identity), 15000));
+      await sb.auth.refreshSession();
+    },
+    async markUsernameChosen() { must(await withTimeout(sb.auth.updateUser({ data: { username_set: true } }), 25000)); },
+    async setFirstPassword(password) { must(await withTimeout(sb.auth.updateUser({ password, data: { password_set: true } }), 25000)); },
     async signUp(email, password, username, name) {
       const data = must(await withTimeout(sb.auth.signUp({ email, password, options: { data: { username, name }, emailRedirectTo: redirect() } }), 25000));
       return { needsConfirm: !data.session };
@@ -534,10 +588,14 @@ export function initCloud() {
     });
     store.subscribe(() => { if (!applying) schedulePush(); });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') pushNow(); });
-    // PKCE-Rueckkehr (E-Mail bestaetigt, Passwort vergessen): ?code= aus der Adresse entfernen
-    if (new URLSearchParams(location.search).has('code')) {
+    // PKCE-Rueckkehr (E-Mail bestaetigt, Passwort vergessen, Google/Apple): ?code= bzw. Fehler aus der Adresse entfernen
+    const params = new URLSearchParams(location.search);
+    if (params.has('error_description') || params.has('error')) {
+      returnError = params.get('error_description') || params.get('error');
+    }
+    if (['code', 'error', 'error_code', 'error_description'].some(k => params.has(k))) {
       const url = new URL(location.href);
-      url.searchParams.delete('code');
+      ['code', 'error', 'error_code', 'error_description'].forEach(k => url.searchParams.delete(k));
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     }
     emit();
@@ -545,6 +603,24 @@ export function initCloud() {
   })();
   return ready;
 }
+
+let returnError = null;
+
+let oauthMode = null;   // 'login' oder 'link:google' / 'link:apple'
+
+/** Kommt der Browser gerade von Google/Apple zurueck? (einmalig, danach vergessen) */
+export function takeOAuthReturn() {
+  try {
+    const v = sessionStorage.getItem(OAUTH_KEY);
+    sessionStorage.removeItem(OAUTH_KEY);
+    if (v) oauthMode = v === '1' ? 'login' : v;
+  } catch { /* egal */ }
+  return oauthMode;
+}
+/** Wofuer ging es zu Google/Apple? Anmelden oder Konto verknuepfen (einmal lesbar) */
+export function takeOAuthMode() { const m = oauthMode; oauthMode = null; return m; }
+/** Fehlermeldung, die Google/Apple bzw. Supabase in der Adresse mitgeschickt hat */
+export function takeReturnError() { const e = returnError; returnError = null; return e; }
 
 async function need() {
   await initCloud();
@@ -603,6 +679,93 @@ export async function logout() {
 }
 
 export async function sendReset(email) { await (await need()).resetPassword(email.trim()); }
+
+/** Eingeschaltete Anbieter (Google, Apple). Leere Liste, wenn keiner an ist oder der Server nicht antwortet. */
+let providerCache = null;
+export async function loginProviders() {
+  if (!providerCache) {
+    providerCache = need().then(a => a.providers()).catch(err => {
+      console.warn('Bitweg: Anbieter nicht lesbar', err);
+      providerCache = null;
+      return [];
+    });
+  }
+  return providerCache;
+}
+
+/** Mit Google oder Apple anmelden bzw. registrieren. Echt: Seite wird verlassen. Test-Attrappe: sofort eingeloggt. */
+export async function loginWith(provider) {
+  if (!PROVIDERS.includes(provider)) throw new Error('unknown provider');
+  const a = await need();
+  try { sessionStorage.setItem(OAUTH_KEY, 'login'); } catch { /* egal */ }
+  const res = await a.signInWith(provider);
+  if (res?.redirected) return false;
+  try { sessionStorage.removeItem(OAUTH_KEY); } catch { /* egal */ }
+  // Test-Attrappe: ohne Umweg eingeloggt
+  manualAuth = true;
+  try {
+    user = await a.session();
+    await syncAfterLogin();
+    startLive();
+    refreshCounts();
+    emit();
+  } finally {
+    manualAuth = false;
+  }
+  return true;
+}
+
+/** Anbieter, mit denen sich das eingeloggte Konto anmelden kann, z. B. ['email', 'google'] */
+export async function linkedProviders() {
+  const list = await (await need()).identities();
+  if (user) user = { ...user, providers: list.length ? list : user.providers };
+  return list;
+}
+
+/** Google/Apple zum Konto hinzufuegen. Echt: Seite wird verlassen. Test-Attrappe: sofort verbunden (true). */
+export async function linkProvider(provider) {
+  if (!PROVIDERS.includes(provider)) throw new Error('unknown provider');
+  const a = await need();
+  await pushNow();   // Stand sichern, bevor die Seite verlassen wird
+  try { sessionStorage.setItem(OAUTH_KEY, `link:${provider}`); } catch { /* egal */ }
+  const res = await a.linkWith(provider);
+  if (res?.redirected) return false;
+  try { sessionStorage.removeItem(OAUTH_KEY); } catch { /* egal */ }
+  return true;
+}
+
+/** Google/Apple vom Konto trennen (nur, wenn noch eine andere Anmeldung bleibt) */
+export async function unlinkProvider(provider) {
+  const a = await need();
+  const list = await a.identities();
+  if (list.length < 2) throw new Error('single_identity_not_deletable');
+  await a.unlink(provider);
+  user = { ...user, providers: list.filter(p => p !== provider) };
+  emit();
+}
+
+/** Google/Apple-Konto: Benutzernamen (und Namen) einmal bestaetigen */
+export async function chooseUsername({ username, name }) {
+  const a = await need();
+  const clean = username.trim().toLowerCase();
+  if (!USERNAME_RE.test(clean)) throw new Error(t('Benutzername: 3 bis 20 Zeichen, nur Kleinbuchstaben, Zahlen und _.', 'Username: 3 to 20 characters, only lowercase letters, numbers and _.'));
+  if (clean !== me?.username && !(await a.usernameAvailable(clean))) throw new Error(t('Dieser Benutzername ist schon vergeben.', 'This username is already taken.'));
+  const fields = { username: clean, name: name.trim().slice(0, 40) };
+  await a.updateProfile(fields);
+  me = { ...me, ...fields };
+  store.update(s => { s.profile.username = fields.username; s.profile.name = fields.name; });
+  await a.markUsernameChosen();
+  user = { ...user, needsUsername: false };
+  emit();
+}
+
+/** Google/Apple-Konto ohne Passwort: eins festlegen (dann geht auch Login mit E-Mail) */
+export async function setFirstPassword(pw) {
+  if (pw.length < 8) throw new Error(t('Das Passwort ist zu kurz. Nimm mindestens 8 Zeichen.', 'The password is too short. Use at least 8 characters.'));
+  await (await need()).setFirstPassword(pw);
+  user = { ...user, hasPassword: true };
+  emit();
+}
 export async function setNewPassword(pw) {
   if (pw.length < 8) throw new Error(t('Das Passwort ist zu kurz. Nimm mindestens 8 Zeichen.', 'The password is too short. Use at least 8 characters.'));
   await (await need()).updatePassword(pw);

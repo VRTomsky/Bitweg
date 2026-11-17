@@ -23,12 +23,15 @@ Wie C++ und VS Code eingerichtet werden, steht in der App unter **Werkstatt**.
 
 - `app/` die Webseite (reines HTML, CSS und JavaScript, kein Build-Schritt)
 - `server.py` kleiner lokaler Server: liefert `app/` aus und führt Code auf dem PC aus (nur `127.0.0.1`)
-- `supabase/schema.sql`, `02-anhaenge.sql`, `03-gruppen.sql`, `04-gruppen-profil.sql` Datenbank für Konten, Freunde, Nachrichten, Anhänge und Gruppen, mit Zugriffsregeln
+- `supabase/schema.sql`, `02-anhaenge.sql`, `03-gruppen.sql`, `04-gruppen-profil.sql`, `05-google-apple.sql` Datenbank für Konten, Freunde, Nachrichten, Anhänge und Gruppen, mit Zugriffsregeln
 - `ANLEITUNG.md` Bedienung und Technik, `LEHRPLAN.md` Inhalte, `EINRICHTEN.md` Konten einrichten
 
 ## Datenschutz
 
+Ausführlich: https://bitweg.de/datenschutz.html
+
+
 - Ohne Konto bleibt alles im Browser.
-- Mit Konto speichert Supabase E-Mail (nur zum Einloggen), Profil, Lernstand, Freundschaften und Nachrichten. Passwörter speichert nur Supabase, verschlüsselt.
+- Mit Konto speichert Supabase E-Mail (nur zum Einloggen), Profil, Lernstand, Freundschaften und Nachrichten. Passwörter speichert nur Supabase, verschlüsselt. Bei „Weiter mit Google/Apple“ bekommt Bitweg von dort nur E-Mail und Namen, kein Passwort.
 - Nachrichten können nur Freunde schicken und nur die beiden lesen. Gruppen lesen nur ihre Mitglieder, hinzufügen darf man nur eigene Freunde. Das prüft die Datenbank selbst.
 - Konto löschen geht im Profil unter „Konto“. Dabei wird alles gelöscht.

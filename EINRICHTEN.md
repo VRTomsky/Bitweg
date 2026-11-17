@@ -86,7 +86,7 @@ Ohne diesen Schritt scheitert das erste Anmelden mit Google/Apple mit „Databas
 2. Menü, **APIs & Dienste** (bzw. **Google Auth Platform**), **OAuth-Zustimmungsbildschirm** bzw. **Branding**:
    - App-Name: `Bitweg`, Support-E-Mail: deine
    - Zielgruppe: **Extern**
-   - Autorisierte Domains: `bitweg.de` und `supabase.co`
+   - Autorisierte Domains: `bitweg.de` und `jpqpkoihjjumncilonik.supabase.co` (nicht nur `supabase.co`, das lehnt Google ab)
    - Datenzugriff/Bereiche: `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile` (das sind die Standardwerte)
    - Unter **Zielgruppe** auf **App veröffentlichen** klicken. Sonst können sich nur eingetragene Testnutzer anmelden.
 3. **Clients** (bzw. **Anmeldedaten**), **Client erstellen** bzw. **OAuth-Client-ID**:

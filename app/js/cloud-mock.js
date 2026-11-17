@@ -47,6 +47,7 @@ export function createMockBackend() {
   const friends = (a, b) => db.friendships.some(f => f.status === 'accepted' && pair(a, b)(f));
   const blocked = (a, b) => db.blocks.some(x => (x.blocker === a && x.blocked === b) || (x.blocker === b && x.blocked === a));
   const delay = v => new Promise(r => setTimeout(() => r(v), 60));
+  const adminNow = () => Boolean(me()?.admin) || /admin/.test(me()?.username || '') || new URLSearchParams(location.search).has('admin');
 
   // Test-Helfer: Mia antwortet automatisch und feuert an
   function botReply(to, from) {
@@ -88,6 +89,28 @@ export function createMockBackend() {
       return delay({ redirected: false });
     },
     async unlink(provider) { const u = me(); u.linked = (u.linked || []).filter(p => p !== provider); save(); return delay(); },
+    async deleteMessage(m) {
+      const i = db.messages.findIndex(x => x.id === m.id && (x.sender === uid() || (adminNow() && [x.sender, x.recipient].includes(uid()))));
+      if (i < 0) throw new Error('delete_not_allowed');
+      db.messages.splice(i, 1);
+      save();
+      return delay();
+    },
+    async clearChat(otherId) {
+      const before = db.messages.length;
+      db.messages = db.messages.filter(x => !((x.sender === uid() && x.recipient === otherId) || (x.sender === otherId && x.recipient === uid())));
+      save();
+      return delay(before - db.messages.length);
+    },
+    // Test-Attrappe: jedes Konto mit "admin" im Benutzernamen oder ?admin in der Adresse ist Admin
+    async isAdmin() { return delay(adminNow()); },
+    async deleteGroupMessage(m) {
+      const i = (db.groupMessages || []).findIndex(x => x.id === m.id && x.sender === uid());
+      if (i < 0) throw new Error('delete_not_allowed');
+      db.groupMessages.splice(i, 1);
+      save();
+      return delay();
+    },
     async markUsernameChosen() { me().username_set = true; save(); return delay(); },
     async setFirstPassword(pw) { me().password = pw; save(); return delay(); },
     onAuth(cb) { authCbs.push(cb); },

@@ -7,6 +7,7 @@ export const icons = {
   check: svg('<path d="M4.5 12.5l4.8 4.8L19.5 7"/>'),
   lock: svg('<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
   close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  trash: svg('<path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 12a2 2 0 0 0 2 1.8h7a2 2 0 0 0 2-1.8l1-12M9 7V4.5h6V7"/>'),
   arrow: svg('<path d="M5 12h13M13 6l6 6-6 6"/>'),
   chevron: svg('<path d="M9 5l7 7-7 7"/>'),
   copy: svg('<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>'),

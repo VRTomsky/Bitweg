@@ -223,6 +223,25 @@ async function supabaseBackend() {
       const data = must(await sb.storage.from('chat').createSignedUrl(path, 3600, download ? { download } : undefined));
       return data.signedUrl;
     },
+    /** Eigene Nachricht loeschen (Admin: auch fremde im eigenen Chat). Datei danach mit weg. */
+    async deleteMessage(m) {
+      const rows = must(await sb.from('messages').delete().eq('id', m.id).select('id'));
+      if (!rows.length) throw new Error('delete_not_allowed');
+      if (m.attachment?.path) await sb.storage.from('chat').remove([m.attachment.path]).catch(() => {});
+    },
+    /** Admin: ganzen Chat mit einer Person leeren, samt Dateien */
+    async clearChat(otherId) {
+      const rows = must(await sb.from('messages').delete()
+        .or(`and(sender.eq.${uid()},recipient.eq.${otherId}),and(sender.eq.${otherId},recipient.eq.${uid()})`)
+        .select('id,attachment'));
+      const paths = rows.map(r => r.attachment?.path).filter(Boolean);
+      for (let i = 0; i < paths.length; i += 100) await sb.storage.from('chat').remove(paths.slice(i, i + 100)).catch(() => {});
+      return rows.length;
+    },
+    async isAdmin() {
+      const { data, error } = await sb.rpc('is_app_admin');
+      return !error && data === true;
+    },
     async markRead(otherId) {
       must(await sb.from('messages').update({ read_at: new Date().toISOString() }).eq('recipient', uid()).eq('sender', otherId).is('read_at', null));
     },
@@ -279,10 +298,17 @@ async function supabaseBackend() {
       must(await sb.storage.from('chat').upload(path, file, { contentType: file.type, upsert: false }));
       return path;
     },
+    async deleteGroupMessage(m) {
+      const rows = must(await sb.from('group_messages').delete().eq('id', m.id).select('id'));
+      if (!rows.length) throw new Error('delete_not_allowed');
+      if (m.attachment?.path) await sb.storage.from('chat').remove([m.attachment.path]).catch(() => {});
+    },
     async markGroupRead(gid) { must(await sb.from('group_members').update({ last_read_at: new Date().toISOString() }).eq('group_id', gid).eq('user_id', uid())); },
     liveGroups(onEvent) {
       const ch = sb.channel(`bitweg-groups-${uid()}`)
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages' }, p => onEvent('group_message', p.new))
+        // Geloeschte Nachrichten: Supabase schickt dabei nur die id mit
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'group_messages' }, p => onEvent('group_message_deleted', p.old))
         .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members' }, p => onEvent('group', p.new || p.old))
         .subscribe();
       return () => sb.removeChannel(ch);
@@ -291,6 +317,7 @@ async function supabaseBackend() {
     live(onEvent) {
       const ch = sb.channel(`laufzeit-${uid()}`)
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient=eq.${uid()}` }, p => onEvent('message', p.new))
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, p => onEvent('message_deleted', p.old))
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'nudges', filter: `recipient=eq.${uid()}` }, p => onEvent('nudge', p.new))
         .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, p => onEvent('friendship', p.new || p.old))
         .subscribe();
@@ -885,6 +912,42 @@ export async function sendMessage(otherId, body, attachment = null) {
   const text = body.trim().slice(0, 1000);
   if (!text && !attachment) throw new Error(t('Leere Nachricht.', 'Empty message.'));
   return (await need()).send(otherId, text, attachment);
+}
+
+/* ================================================================ Loeschen */
+
+const NOT_DELETED = () => new Error(t('Nicht gelöscht. Vielleicht ist Löschen noch nicht eingerichtet (supabase/06-nachrichten-loeschen.sql).', 'Not deleted. Deleting may not be set up yet (supabase/06-nachrichten-loeschen.sql).'));
+
+/** Eigene Nachricht (mit Bild/Datei) loeschen, fuer beide */
+export async function deleteMessage(m) {
+  try { await (await need()).deleteMessage(m); } catch (err) {
+    if (/delete_not_allowed|permission denied/i.test(String(err?.message))) throw NOT_DELETED();
+    throw err;
+  }
+}
+export async function deleteGroupMessage(m) {
+  try { await (await need()).deleteGroupMessage(m); } catch (err) {
+    if (/delete_not_allowed|permission denied/i.test(String(err?.message))) throw NOT_DELETED();
+    throw err;
+  }
+}
+
+/** Ist das eingeloggte Konto Bitweg-Admin? (steht in public.app_admins) */
+let adminCache = null;
+export async function amIAdmin() {
+  if (!user) return false;
+  if (!adminCache || adminCache.id !== user.id) {
+    adminCache = { id: user.id, value: need().then(a => a.isAdmin()).catch(() => false) };
+  }
+  return adminCache.value;
+}
+
+/** Admin: ganzen Chat mit einer Person leeren. Liefert die Zahl geloeschter Nachrichten. */
+export async function clearChat(otherId) {
+  if (!(await amIAdmin())) throw new Error(t('Chats leeren darf nur der Admin.', 'Only the admin can clear chats.'));
+  const n = await (await need()).clearChat(otherId);
+  refreshCounts();
+  return n;
 }
 
 /* ================================================================ Anhaenge */

@@ -11,6 +11,7 @@ import {
   CLOUD_ENABLED, initCloud, currentUser, germanError, loadFriends, onLive,
   groupsAvailable, groupProfileAvailable, loadGroups, groupUnread, createGroup, groupDetails, addGroupMembers,
   removeGroupMember, leaveGroup, updateGroupProfile, setGroupRole, loadGroupThread, sendGroupMessage, sendGroupAttachment, markGroupRead,
+  deleteGroupMessage,
 } from '../cloud.js';
 
 const displayName = p => p?.name || `@${p?.username}`;
@@ -288,6 +289,7 @@ export async function renderGroup(main, gid) {
     placeholder: t('Nachricht schreiben', 'Write a message'),
     send: body => sendGroupMessage(gid, body),
     sendFile: (file, body) => sendGroupAttachment(gid, file, body),
+    onDelete: m => deleteGroupMessage(m),
     senderOf: m => {
       const p = byId[m.sender];
       return { name: p ? displayName(p) : t('Ehemaliges Mitglied', 'Former member'), avatarEl: personAvatar(p, 22) };
@@ -321,6 +323,7 @@ export async function renderGroup(main, gid) {
       box.add(row, { live: true });
       markGroupRead(gid).catch(() => {});
     }
+    if (kind === 'group_message_deleted' && row?.id != null) box.remove(row.id);
   });
   box.focus();
 }

@@ -216,7 +216,7 @@ export function chatBox(opts) {
     const first = who && lastSender !== m.sender;
     lastSender = m.sender;
     list.append(h('li', { class: `msg${mine ? ' is-mine' : ''}${m.attachment ? ' has-file' : ''}${who ? ' in-group' : ''}${first ? ' is-first' : ''}`, 'data-id': String(m.id) },
-      who && first ? h('span', { class: 'msg-who' }, who.avatarEl, h('b', {}, who.name)) : null,
+      who && first ? h('span', { class: 'msg-who' }, who.avatarEl, h('b', {}, who.name), who.badge || null) : null,
       m.attachment ? attachmentView(m.attachment) : null,
       m.body ? h('p', {}, m.body) : null,
       h('small', {}, timeText(m.created_at),

@@ -13,6 +13,7 @@ import { imagePicker, pasteImagesInto } from '../imagepick.js';
 import { backupNow, backupInfo, listBackups, loadBackup, onBackupChange } from '../backup.js';
 import { IS_WEB } from '../env.js';
 import { connectedAccounts } from './providers.js';
+import { adminBadge } from './adminbadge.js';
 import { CLOUD_ENABLED, currentUser, myProfile, saveProfile, logout, deleteAccount, changePassword, changeEmail, setFirstPassword, blockedIds, unblockUser, germanError, initCloud, profilesById } from '../cloud.js';
 
 const AGE_LABEL = { u13: t('Unter 13', 'Under 13'), '13-15': '13 bis 15', '16-18': '16 bis 18', '19+': t('19 oder älter', '19 or older') };
@@ -45,7 +46,7 @@ function profileHeader() {
     h('div', { class: 'prof-body' },
       h('div', { class: 'prof-avatar' }, avatarEl(128)),
       h('div', { class: 'prof-id' },
-        h('h1', {}, p.name || t('Dein Name', 'Your name')),
+        h('h1', {}, p.name || t('Dein Name', 'Your name'), adminBadge('me')),
         h('p', { class: 'prof-user' }, p.username ? `@${p.username}` : t('Noch kein Benutzername', 'No username yet')),
         h('p', { class: 'prof-joined' }, joinedText()),
         p.bio ? h('p', { class: 'prof-bio' }, p.bio) : null,

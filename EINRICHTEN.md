@@ -155,6 +155,10 @@ Danach:
 - **Nur der Admin** sieht im Chat oben rechts einen Mülleimer: **Chat leeren** löscht alle Nachrichten, Bilder und Dateien in diesem Chat für beide.
 - Admin wird man nur über den SQL Editor, nie über die App.
 
+## 11. Rotes „Admin“ neben dem Namen (Erweiterung)
+
+Erst nach Schritt 10 ausführen. **SQL Editor**, **New query**, Inhalt von `supabase/07-admin-abzeichen.sql` einfügen, **Run**. Danach steht neben dem Namen jedes Admins ein kleines rotes **ADMIN**: im Profil, in Suche, Freundesliste, Rangliste, Chat und Gruppen.
+
 ## 9. Datenschutzerklärung
 
 Liegt unter `app/datenschutz.html` (online: https://bitweg.de/datenschutz.html) und ist von Login, Registrierung und Profil verlinkt. Bei Google steht genau diese Adresse auf der **Branding**-Seite. Wenn Bitweg neue Dienste bekommt, muss die Seite angepasst werden.

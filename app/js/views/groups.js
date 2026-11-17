@@ -6,6 +6,7 @@ import { icon } from '../icons.js';
 import { bit } from '../mascot.js';
 import { chatBox, timeText } from './chatbox.js';
 import { personAvatar } from './friends.js';
+import { adminBadge } from './adminbadge.js';
 import { imagePicker, pasteImagesInto } from '../imagepick.js';
 import {
   CLOUD_ENABLED, initCloud, currentUser, germanError, loadFriends, onLive,
@@ -215,7 +216,7 @@ async function openGroupDialog(info, onChange) {
     }
     return h('li', {},
       h('div', { class: 'pick-row' }, personAvatar(m.profile, 36),
-        h('span', {}, h('b', {}, displayName(m.profile), self ? h('small', { class: 'you-tag' }, t(' (du)', ' (you)')) : null, tag), h('small', {}, `@${m.profile.username}`)),
+        h('span', {}, h('b', {}, displayName(m.profile), adminBadge(m.user_id), self ? h('small', { class: 'you-tag' }, t(' (du)', ' (you)')) : null, tag), h('small', {}, `@${m.profile.username}`)),
         buttons.length ? h('span', { class: 'member-actions' }, buttons) : null));
   }));
 
@@ -292,7 +293,7 @@ export async function renderGroup(main, gid) {
     onDelete: m => deleteGroupMessage(m),
     senderOf: m => {
       const p = byId[m.sender];
-      return { name: p ? displayName(p) : t('Ehemaliges Mitglied', 'Former member'), avatarEl: personAvatar(p, 22) };
+      return { name: p ? displayName(p) : t('Ehemaliges Mitglied', 'Former member'), avatarEl: personAvatar(p, 22), badge: adminBadge(m.sender) };
     },
   });
 

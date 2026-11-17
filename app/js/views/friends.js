@@ -4,6 +4,7 @@
 import { t, locale } from '../i18n.js';
 import { h, toast, confirmDialog, showModal } from '../util.js';
 import { icon, solidIcon, langLogo } from '../icons.js';
+import { adminBadge } from './adminbadge.js';
 import { bit } from '../mascot.js';
 import { chatBox } from './chatbox.js';
 import { groupsSection } from './groups.js';
@@ -89,7 +90,7 @@ function friendRow(p, unread = 0) {
     h('a', { class: 'friend-main', href: `#/nutzer/${p.username}` },
       h('span', { class: `friend-av${s.today ? ' is-today' : ''}` }, personAvatar(p, 52)),
       h('span', { class: 'friend-text' },
-        h('b', {}, displayName(p), lang ? h('span', { class: 'friend-lang', html: langLogo(lang, 18) }) : null),
+        h('b', {}, displayName(p), adminBadge(p.id), lang ? h('span', { class: 'friend-lang', html: langLogo(lang, 18) }) : null),
         h('small', {}, `@${p.username} · ${lastSeen(p)}`),
         h('small', { class: 'friend-act' }, activity(p)))),
     h('span', { class: 'friend-stats' },
@@ -110,7 +111,7 @@ function leaderboard(friends) {
     h('ol', { class: 'ranking' }, list.map((p, i) => h('li', { class: p.isMe ? 'is-me' : '' },
       h('span', { class: 'rank-no' }, i + 1),
       personAvatar(p, 36),
-      h('span', { class: 'rank-name' }, p.isMe ? 'Du' : displayName(p)),
+      h('span', { class: 'rank-name' }, p.isMe ? 'Du' : displayName(p), p.isMe ? null : adminBadge(p.id)),
       h('b', {}, `${p.summary?.weekXp || 0} XP`)))),
     h('p', { class: 'muted social-note' }, t('XP der letzten 7 Tage. Wer am Sonntag vorne liegt, hat gewonnen.', 'XP of the last 7 days. Whoever leads on Sunday wins.')));
 }
@@ -140,7 +141,7 @@ function searchBox(onChange) {
             } else btn.disabled = false;
           };
           results.append(h('li', {},
-            h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 40), h('span', {}, h('b', {}, displayName(p)), h('small', {}, `@${p.username}`))),
+            h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 40), h('span', {}, h('b', {}, displayName(p), adminBadge(p.id)), h('small', {}, `@${p.username}`))),
             btn));
         }
       } catch (err) {
@@ -192,7 +193,7 @@ export async function renderFriends(main) {
       body.append(h('section', { class: 'section' },
         h('h2', {}, t(`Anfragen (${data.incoming.length})`, `Requests (${data.incoming.length})`)),
         h('ul', { class: 'requests' }, data.incoming.map(p => h('li', {},
-          h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 44), h('span', {}, h('b', {}, displayName(p)), h('small', {}, `@${p.username} · ${activity(p)}`))),
+          h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 44), h('span', {}, h('b', {}, displayName(p), adminBadge(p.id)), h('small', {}, `@${p.username} · ${activity(p)}`))),
           h('span', { class: 'row-actions' },
             h('button', { type: 'button', class: 'btn btn-small btn-go', onclick: async () => { if (await guard(() => acceptFriend(p.id), t(`Du bist jetzt mit ${displayName(p)} befreundet`, `You're now friends with ${displayName(p)}`))) repaint(); } }, t('Annehmen', 'Accept')),
             h('button', { type: 'button', class: 'btn btn-small btn-ghost', onclick: async () => { if (await guard(() => removeFriend(p.id))) repaint(); } }, t('Ablehnen', 'Decline'))))))));
@@ -216,7 +217,7 @@ export async function renderFriends(main) {
       body.append(h('section', { class: 'section' },
         h('h2', {}, t('Gesendete Anfragen', 'Sent requests')),
         h('ul', { class: 'requests' }, data.outgoing.map(p => h('li', {},
-          h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 40), h('span', {}, h('b', {}, displayName(p)), h('small', {}, `@${p.username}`))),
+          h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 40), h('span', {}, h('b', {}, displayName(p), adminBadge(p.id)), h('small', {}, `@${p.username}`))),
           h('button', { type: 'button', class: 'btn btn-small btn-ghost', onclick: async () => { if (await guard(() => removeFriend(p.id), t('Anfrage zurückgezogen', 'Request withdrawn'))) repaint(); } }, t('Zurückziehen', 'Withdraw')))))));
     }
     refreshCounts();
@@ -337,7 +338,7 @@ export async function renderUser(main, username) {
       h('div', { class: 'prof-body' },
         h('div', { class: 'prof-avatar' }, personAvatar(p, 128)),
         h('div', { class: 'prof-id' },
-          h('h1', {}, displayName(p)),
+          h('h1', {}, displayName(p), adminBadge(p.id)),
           h('p', { class: 'prof-user' }, `@${p.username}`),
           h('p', { class: 'prof-joined' }, t(`${lastSeen(p)} · dabei seit ${new Date(p.created_at || Date.now()).toLocaleDateString(locale(), { month: 'long', year: 'numeric' })}`, `${lastSeen(p)} · joined ${new Date(p.created_at || Date.now()).toLocaleDateString(locale(), { month: 'long', year: 'numeric' })}`)),
           p.bio ? h('p', { class: 'prof-bio' }, p.bio) : null,
@@ -425,7 +426,7 @@ export async function renderChat(main, username) {
   page.append(
     h('header', { class: 'chat-head' },
       h('a', { class: 'icon-btn', href: '#/freunde', 'aria-label': t('Zurück zu den Freunden', 'Back to friends'), html: icon('back', 22) }),
-      h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 44), h('span', {}, h('b', {}, displayName(p)), h('small', {}, `@${p.username} · ${activity(p)}`))),
+      h('a', { class: 'search-person', href: `#/nutzer/${p.username}` }, personAvatar(p, 44), h('span', {}, h('b', {}, displayName(p), adminBadge(p.id)), h('small', {}, `@${p.username} · ${activity(p)}`))),
       friends ? h('button', { type: 'button', class: 'icon-btn', title: t('Anfeuern', 'Cheer on'), 'aria-label': t('Anfeuern', 'Cheer on'), onclick: () => guard(() => cheer(p.id), t(`${displayName(p)} angefeuert`, `Cheered on ${displayName(p)}`)), html: solidIcon('bolt', 22) }) : null,
       clearBtn),
     box.list,

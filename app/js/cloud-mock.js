@@ -104,6 +104,7 @@ export function createMockBackend() {
     },
     // Test-Attrappe: jedes Konto mit "admin" im Benutzernamen oder ?admin in der Adresse ist Admin
     async isAdmin() { return delay(adminNow()); },
+    async adminIds() { return delay(Object.values(db.users).filter(u => u.admin || /admin/.test(u.username || '') || (u.id === uid() && adminNow())).map(u => u.id)); },
     async deleteGroupMessage(m) {
       const i = (db.groupMessages || []).findIndex(x => x.id === m.id && x.sender === uid());
       if (i < 0) throw new Error('delete_not_allowed');

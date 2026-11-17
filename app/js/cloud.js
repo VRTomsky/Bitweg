@@ -238,6 +238,11 @@ async function supabaseBackend() {
       for (let i = 0; i < paths.length; i += 100) await sb.storage.from('chat').remove(paths.slice(i, i + 100)).catch(() => {});
       return rows.length;
     },
+    async adminIds() {
+      const { data, error } = await sb.rpc('app_admin_ids');
+      if (error) return [];   // 07-admin-abzeichen.sql fehlt noch: dann eben kein Abzeichen
+      return (data || []).map(r => (typeof r === 'string' ? r : r.app_admin_ids)).filter(Boolean);
+    },
     async isAdmin() {
       const { data, error } = await sb.rpc('is_app_admin');
       return !error && data === true;
@@ -452,7 +457,7 @@ function syncAfterLogin() {
 async function doSync() {
   applying = true;
   try {
-    const [row, prof] = await Promise.all([api.getProgress(), api.getProfile(user.id)]);
+    const [row, prof] = await Promise.all([api.getProgress(), api.getProfile(user.id), loadAdminIds()]);
     me = prof;
     const owner = localStorage.getItem(OWNER_KEY);
     const local = store.state;
@@ -940,6 +945,26 @@ export async function amIAdmin() {
     adminCache = { id: user.id, value: need().then(a => a.isAdmin()).catch(() => false) };
   }
   return adminCache.value;
+}
+
+/** Wer ist Bitweg-Admin? Fuer das rote Abzeichen neben dem Namen (alle duerfen das sehen). */
+let adminIds = new Set();
+let adminIdsLoad = null;
+const adminIdListeners = new Set();
+export const isAdminId = id => Boolean(id) && adminIds.has(id);
+export function onAdminIds(fn) { adminIdListeners.add(fn); return () => adminIdListeners.delete(fn); }
+export function loadAdminIds() {
+  if (!api || !user) return Promise.resolve(adminIds);
+  if (!adminIdsLoad) {
+    adminIdsLoad = (api.adminIds ? api.adminIds() : Promise.resolve([]))
+      .catch(() => [])
+      .then(list => {
+        adminIds = new Set(list);
+        adminIdListeners.forEach(fn => fn(adminIds));
+        return adminIds;
+      });
+  }
+  return adminIdsLoad;
 }
 
 /** Admin: ganzen Chat mit einer Person leeren. Liefert die Zahl geloeschter Nachrichten. */

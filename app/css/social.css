@@ -519,3 +519,8 @@ dialog.confirm .row-actions.img-pick > .btn { width: auto; flex: 1 1 auto; margi
 /* hidden-Attribut gegen display:grid durchsetzen */
 .auth-social[hidden], .chat-head .icon-btn[hidden] { display: none; }
 .msg-delete { margin-left: auto; }
+
+/* Rotes "Admin" neben dem Namen des Bitweg-Admins */
+.admin-badge { display: inline-block; margin-left: .4em; padding: 1px 7px; border-radius: 999px; background: var(--coral); color: #fff; font-family: Nunito, system-ui, sans-serif; font-size: 11px; font-weight: 900; line-height: 1.5; letter-spacing: .05em; text-transform: uppercase; vertical-align: middle; white-space: nowrap; }
+.admin-badge[hidden] { display: none; }
+h1 .admin-badge { font-size: 12px; vertical-align: .35em; }

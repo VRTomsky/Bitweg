@@ -54,6 +54,9 @@ export function germanError(err) {
   if (/invalid.*email|Unable to validate email/i.test(m)) return t('Diese E-Mail-Adresse sieht nicht richtig aus.', 'This email address doesn\'t look right.');
   if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return t('Keine Verbindung zum Server. Bist du online?', 'No connection to the server. Are you online?');
   if (/row-level security|violates/i.test(m)) return t('Das ist nicht erlaubt (z. B. nur unter Freunden möglich).', 'That\'s not allowed (e.g. only possible between friends).');
+  if (/identity_already_exists|already linked|identity.*already exists/i.test(m)) return t('Dieses Konto ist schon mit einem anderen Bitweg-Konto verbunden. Log dich dort aus oder nimm ein anderes.', 'This account is already connected to another Bitweg account. Log out there or use another one.');
+  if (/manual.?linking/i.test(m)) return t('Konten verbinden ist noch nicht eingeschaltet (Supabase: „Allow manual linking“).', 'Connecting accounts isn\'t switched on yet (Supabase: “Allow manual linking”).');
+  if (/single_identity|at least 1 identity|only identity/i.test(m)) return t('Das ist deine einzige Anmeldung. Leg erst ein Passwort fest oder verbinde ein anderes Konto.', 'That\'s your only way to log in. Set a password or connect another account first.');
   if (/provider is not enabled|Unsupported provider/i.test(m)) return t('Diese Anmeldung ist gerade nicht eingeschaltet. Nimm E-Mail und Passwort.', 'This sign-in option isn\'t switched on right now. Use email and password.');
   if (/access_denied|user_cancel/i.test(m)) return t('Anmeldung abgebrochen.', 'Sign-in cancelled.');
   if (/reauthenticat/i.test(m)) return t('Aus Sicherheitsgründen: einmal aus- und wieder einloggen, dann nochmal versuchen.', 'For security: log out and back in once, then try again.');
@@ -137,6 +140,23 @@ async function supabaseBackend() {
     async signInWith(provider) {
       must(await sb.auth.signInWithOAuth({ provider, options: { redirectTo: redirect() } }));
       return { redirected: true };
+    },
+    /** Mit welchen Anbietern kann sich dieses Konto anmelden? (frisch vom Server) */
+    async identities() {
+      const data = must(await withTimeout(sb.auth.getUserIdentities(), 15000));
+      return (data.identities || []).map(i => i.provider);
+    },
+    /** Google/Apple zum eingeloggten Konto hinzufuegen. Leitet weiter, die Seite wird verlassen. */
+    async linkWith(provider) {
+      must(await sb.auth.linkIdentity({ provider, options: { redirectTo: redirect() } }));
+      return { redirected: true };
+    },
+    async unlink(provider) {
+      const data = must(await withTimeout(sb.auth.getUserIdentities(), 15000));
+      const identity = (data.identities || []).find(i => i.provider === provider);
+      if (!identity) return;
+      must(await withTimeout(sb.auth.unlinkIdentity(identity), 15000));
+      await sb.auth.refreshSession();
     },
     async markUsernameChosen() { must(await withTimeout(sb.auth.updateUser({ data: { username_set: true } }), 25000)); },
     async setFirstPassword(password) { must(await withTimeout(sb.auth.updateUser({ password, data: { password_set: true } }), 25000)); },
@@ -586,12 +606,19 @@ export function initCloud() {
 
 let returnError = null;
 
+let oauthMode = null;   // 'login' oder 'link:google' / 'link:apple'
+
 /** Kommt der Browser gerade von Google/Apple zurueck? (einmalig, danach vergessen) */
 export function takeOAuthReturn() {
-  let pending = false;
-  try { pending = sessionStorage.getItem(OAUTH_KEY) === '1'; sessionStorage.removeItem(OAUTH_KEY); } catch { /* egal */ }
-  return pending;
+  try {
+    const v = sessionStorage.getItem(OAUTH_KEY);
+    sessionStorage.removeItem(OAUTH_KEY);
+    if (v) oauthMode = v === '1' ? 'login' : v;
+  } catch { /* egal */ }
+  return oauthMode;
 }
+/** Wofuer ging es zu Google/Apple? Anmelden oder Konto verknuepfen (einmal lesbar) */
+export function takeOAuthMode() { const m = oauthMode; oauthMode = null; return m; }
 /** Fehlermeldung, die Google/Apple bzw. Supabase in der Adresse mitgeschickt hat */
 export function takeReturnError() { const e = returnError; returnError = null; return e; }
 
@@ -670,7 +697,7 @@ export async function loginProviders() {
 export async function loginWith(provider) {
   if (!PROVIDERS.includes(provider)) throw new Error('unknown provider');
   const a = await need();
-  try { sessionStorage.setItem(OAUTH_KEY, '1'); } catch { /* egal */ }
+  try { sessionStorage.setItem(OAUTH_KEY, 'login'); } catch { /* egal */ }
   const res = await a.signInWith(provider);
   if (res?.redirected) return false;
   // Test-Attrappe: ohne Umweg eingeloggt
@@ -685,6 +712,35 @@ export async function loginWith(provider) {
     manualAuth = false;
   }
   return true;
+}
+
+/** Anbieter, mit denen sich das eingeloggte Konto anmelden kann, z. B. ['email', 'google'] */
+export async function linkedProviders() {
+  const list = await (await need()).identities();
+  if (user) user = { ...user, providers: list.length ? list : user.providers };
+  return list;
+}
+
+/** Google/Apple zum Konto hinzufuegen. Echt: Seite wird verlassen. Test-Attrappe: sofort verbunden (true). */
+export async function linkProvider(provider) {
+  if (!PROVIDERS.includes(provider)) throw new Error('unknown provider');
+  const a = await need();
+  await pushNow();   // Stand sichern, bevor die Seite verlassen wird
+  try { sessionStorage.setItem(OAUTH_KEY, `link:${provider}`); } catch { /* egal */ }
+  const res = await a.linkWith(provider);
+  if (res?.redirected) return false;
+  try { sessionStorage.removeItem(OAUTH_KEY); } catch { /* egal */ }
+  return true;
+}
+
+/** Google/Apple vom Konto trennen (nur, wenn noch eine andere Anmeldung bleibt) */
+export async function unlinkProvider(provider) {
+  const a = await need();
+  const list = await a.identities();
+  if (list.length < 2) throw new Error('single_identity_not_deletable');
+  await a.unlink(provider);
+  user = { ...user, providers: list.filter(p => p !== provider) };
+  emit();
 }
 
 /** Google/Apple-Konto: Benutzernamen (und Namen) einmal bestaetigen */

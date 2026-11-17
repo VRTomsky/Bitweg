@@ -79,6 +79,15 @@ export function createMockBackend() {
       save();
       return delay({ redirected: false });
     },
+    async identities() { const u = me(); return delay([u.provider || 'email', ...(u.linked || [])]); },
+    async linkWith(provider) {
+      const u = me();
+      if (u.provider === provider) return delay({ redirected: false });
+      u.linked = [...new Set([...(u.linked || []), provider])];
+      save();
+      return delay({ redirected: false });
+    },
+    async unlink(provider) { const u = me(); u.linked = (u.linked || []).filter(p => p !== provider); save(); return delay(); },
     async markUsernameChosen() { me().username_set = true; save(); return delay(); },
     async setFirstPassword(pw) { me().password = pw; save(); return delay(); },
     onAuth(cb) { authCbs.push(cb); },

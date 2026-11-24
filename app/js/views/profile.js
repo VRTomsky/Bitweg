@@ -8,6 +8,7 @@ import { store } from '../store.js';
 import { COURSES, LANG_IDS } from '../content/index.js';
 import { BADGES, levelInfo, currentStreak, courseProgress } from '../gamification.js';
 import { applyTheme } from '../theme.js';
+import { refreshThemeToggles } from './themetoggle.js';
 import { GOALS } from '../personalize.js';
 import { imagePicker, pasteImagesInto } from '../imagepick.js';
 import { backupNow, backupInfo, listBackups, loadBackup, onBackupChange } from '../backup.js';
@@ -490,7 +491,7 @@ export function renderProfile(main) {
           v => { if (v !== uiLang()) { setUiLang(v); location.reload(); } }, 'Sprache · Language')),
       h('div', { class: 'field' }, h('span', {}, t('Darstellung', 'Appearance')),
         segmented([['auto', t('Wie System', 'System')], ['light', t('Hell', 'Light')], ['dark', t('Dunkel', 'Dark')]], s.settings.theme,
-          v => { store.update(st => { st.settings.theme = v; }); applyTheme(); }, t('Darstellung', 'Appearance'))),
+          v => { store.update(st => { st.settings.theme = v; }); applyTheme(); refreshThemeToggles(); }, t('Darstellung', 'Appearance'))),
       h('div', { class: 'field' }, h('span', {}, t('Tagesziel', 'Daily goal')),
         segmented([[10, '10 XP'], [30, '30 XP'], [50, '50 XP'], [100, '100 XP']], s.settings.dailyGoal,
           v => store.update(st => { st.settings.dailyGoal = v; }), t('Tagesziel', 'Daily goal')),

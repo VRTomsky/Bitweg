@@ -1,8 +1,8 @@
-// Sprach-Icon (Weltkugel) mit kleinem Menue: DE / EN. Sitzt oben rechts.
+// Sprachwahl mit Landesflagge und kleinem Menue. Sitzt oben rechts, daneben der Hell/Dunkel-Schalter.
 
 import { h } from '../util.js';
-import { icon } from '../icons.js';
-import { uiLang, setUiLang, t } from '../i18n.js';
+import { flag } from '../flags.js';
+import { uiLang, setUiLang, t, UI_LANGS } from '../i18n.js';
 
 let menu = null;
 function close() {
@@ -22,7 +22,7 @@ function open(btn) {
     class: 'uilang-menu',
     role: 'menu',
     style: { top: `${r.bottom + 8}px`, left: `${Math.max(8, Math.min(window.innerWidth - 168, r.right - 160))}px` },
-  }, [['de', 'DE', 'Deutsch'], ['en', 'EN', 'English']].map(([id, short, name]) => h('button', {
+  }, Object.entries(UI_LANGS).map(([id, name]) => h('button', {
     type: 'button',
     role: 'menuitemradio',
     'aria-checked': String(id === current),
@@ -33,13 +33,13 @@ function open(btn) {
       setUiLang(id);
       location.reload();
     },
-  }, h('b', {}, short), h('span', {}, name))));
+  }, h('span', { html: flag(id) }), h('span', {}, name))));
   document.body.append(menu);
   btn.setAttribute('aria-expanded', 'true');
   menu.querySelector('[aria-checked="true"]')?.focus();
 }
 
-/** Knopf mit Weltkugel und aktuellem Kuerzel */
+/** Knopf mit Flagge und aktuellem Kuerzel */
 export function uiLangButton(extraClass = '') {
   return h('button', {
     type: 'button',
@@ -49,5 +49,5 @@ export function uiLangButton(extraClass = '') {
     'aria-label': t('Sprache: Deutsch. Ändern', 'Language: English. Change'),
     title: t('Sprache', 'Language'),
     onclick: e => { e.stopPropagation(); open(e.currentTarget); },
-  }, h('span', { html: icon('globe', 20) }), h('b', {}, uiLang().toUpperCase()));
+  }, h('span', { html: flag(uiLang()) }), h('b', {}, uiLang().toUpperCase()));
 }

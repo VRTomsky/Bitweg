@@ -5,6 +5,7 @@ import { t, locale } from '../i18n.js';
 import { h, toast } from '../util.js';
 import { bit } from '../mascot.js';
 import { uiLangButton } from './uilang.js';
+import { themeToggle } from './themetoggle.js';
 import { store } from '../store.js';
 import { CLOUD_ENABLED, USERNAME_RE, register, login, sendReset, setNewPassword, germanError, currentUser, initCloud, myProfile, loginProviders, loginWith, chooseUsername, takeReturnError, takeOAuthMode } from '../cloud.js';
 import { GOOGLE_SVG, APPLE_SVG, PROVIDER_NAME } from './providers.js';
@@ -69,7 +70,7 @@ function frame(title, sub, body, mood = 'wave') {
   app.append(h('div', { class: 'auth-page' },
     h('div', { class: 'auth-top' },
       h('a', { class: 'brand auth-brand', href: store.state.onboarded ? '#/pfad' : '#/start' }, 'bitweg', h('span', { class: 'brand-cursor' })),
-      uiLangButton()),
+      h('div', { class: 'top-switches' }, themeToggle(), uiLangButton())),
     h('main', { class: 'auth-card' },
       h('div', { class: 'auth-bit', html: bit({ size: 96, mood }) }),
       h('h1', {}, title),

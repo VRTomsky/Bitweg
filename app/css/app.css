@@ -710,7 +710,8 @@ dialog.confirm .row-actions .btn { width: 100%; }
     gap: var(--s3);
   }
   .rail .brand-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); }
-  .rail .brand-row > .mobile-only { flex: 1; max-width: 230px; }
+  .rail .brand-row > .mobile-only { flex: 0 1 auto; min-width: 0; }
+  .mobile-only .stat-row { justify-content: flex-end; }
   .brand { font-size: 1.5rem; padding: 0; }
   .mobile-only { display: block; }
   .mobile-only .stat-row { padding: 0; gap: 0; }

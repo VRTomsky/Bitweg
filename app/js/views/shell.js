@@ -6,6 +6,7 @@ import { icon, solidIcon, langLogo } from '../icons.js';
 import { store } from '../store.js';
 import { COURSES, LANG_IDS } from '../content/index.js';
 import { uiLangButton } from './uilang.js';
+import { themeToggle } from './themetoggle.js';
 import { CLOUD_ENABLED, socialCounts, onCloudChange } from '../cloud.js';
 import { levelInfo, currentStreak, learnedToday, todayXp, nextBadge, dailyQuests } from '../gamification.js';
 
@@ -88,7 +89,7 @@ export function statRow() {
     }, h('span', { class: 'ls-logo', html: langLogo(lang, 32) }), h('span', { class: 'chip-caret', html: icon('chevron', 16) })),
     h('span', { class: `stat-chip is-flame${hot ? '' : ' is-cold'}`, title: t(`${streak} Tage in Folge`, `${streak} days in a row`) }, h('span', { html: solidIcon(hot ? 'flame' : 'flameCold', 26) }), streak),
     h('span', { class: 'stat-chip is-xp', title: `${s.xp} XP gesamt` }, h('span', { html: solidIcon('bolt', 26) }), s.xp),
-    uiLangButton('stat-chip'));
+    h('span', { class: 'top-switches' }, themeToggle(), uiLangButton('stat-chip')));
 }
 
 function streakCard() {

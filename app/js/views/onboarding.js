@@ -4,6 +4,7 @@
 
 import { t, locale } from '../i18n.js';
 import { uiLangButton } from './uilang.js';
+import { themeToggle } from './themetoggle.js';
 import { h, dayKey, toast } from '../util.js';
 import { icon, solidIcon, levelBars, langLogo } from '../icons.js';
 import { bit } from '../mascot.js';
@@ -213,7 +214,7 @@ const STEPS = {
       },
     });
     const desktopBtn = h('button', { type: 'button', class: 'btn btn-sky', hidden: true }, t('Fortschritt vom Desktop laden', 'Load progress from desktop'));
-    const langToggle = uiLangButton('onb-uilang');
+    const langToggle = h('div', { class: 'onb-uilang top-switches' }, themeToggle(), uiLangButton());
     app.append(h('div', { class: 'onb onb-welcome' }, langToggle,
       h('main', { class: 'onb-hero' },
         h('div', { class: 'onb-hero-bit', html: bit({ size: 200, mood: 'wave' }) }),

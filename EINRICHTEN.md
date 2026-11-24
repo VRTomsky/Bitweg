@@ -2,6 +2,23 @@
 
 Damit Registrieren, Freunde und Nachrichten funktionieren, braucht Bitweg eine Datenbank. Dafür nutzen wir **Supabase** (kostenlos für kleine Projekte).
 
+## Überblick: alle SQL-Dateien
+
+Jede Datei einmal im Supabase **SQL Editor** ausführen (**New query**, Inhalt einfügen, **Run**), in dieser Reihenfolge. Alle lassen sich gefahrlos erneut ausführen. Fehlt eine Erweiterung, läuft der Rest trotzdem; die App zeigt dann nur die jeweilige Funktion nicht.
+
+| Datei | Wofür | Schritt |
+|---|---|---|
+| `schema.sql` | Konten, Profile, Freunde, Nachrichten, Anfeuern, Meldungen | 2 |
+| `02-anhaenge.sql` | Bilder und Dateien im Chat | 5 |
+| `03-gruppen.sql` | Gruppenchats | 6 |
+| `04-gruppen-profil.sql` | Gruppenbild, Banner, Bio, Gruppen-Admins | 7 |
+| `05-google-apple.sql` | Anmelden mit Google/Apple (Benutzername automatisch) | 8 |
+| `06-nachrichten-loeschen.sql` | Eigene Nachrichten löschen, Admin leert Chats | 10 |
+| `07-admin-abzeichen.sql` | Rotes ADMIN neben dem Namen | 11 |
+| `08-klassen.sql` | Gruppen bis 60 Mitglieder (ganze Klasse) | 12 |
+
+Außerdem im Dashboard: Anmelde-Einstellungen (Schritt 3), Google-Login (Schritt 8), Einstellungen für eine Schulklasse (Schritt 12).
+
 ## 1. Supabase-Konto und Projekt
 
 1. Geh auf **https://supabase.com** und klick **Start your project**.
@@ -29,9 +46,11 @@ Damit Registrieren, Freunde und Nachrichten funktionieren, braucht Bitweg eine D
    Warum aus? Supabase schickt kostenlos nur sehr wenige E-Mails pro Stunde. Mit „aus“ funktioniert die Registrierung sofort, ohne Bestätigungsmail. „Passwort vergessen“ schickt trotzdem eine E-Mail.
 2. **Authentication**, dann **URL Configuration**:
    - **Site URL**: `https://bitweg.de/`
-   - **Redirect URLs** hinzufügen:
-     - `https://bitweg.de/`
-     - `http://127.0.0.1:5741/`
+   - **Redirect URLs** hinzufügen (die zwei Sternchen erlauben alles nach dem `/`):
+     - `https://bitweg.de/**`
+     - `http://127.0.0.1:5741/**`
+
+   Wichtig: Steht bei Site URL noch `http://localhost:3000`, landet man nach „Weiter mit Google“ auf einer Fehlerseite.
 
 ## 4. Zugangsdaten an Claude geben
 

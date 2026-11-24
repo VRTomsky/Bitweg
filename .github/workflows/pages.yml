@@ -20,14 +20,23 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app
+      # GitHub findet das eben hochgeladene Paket manchmal nicht sofort ("No artifacts named github-pages").
+      # Dann nach kurzer Pause ein zweiter Versuch, statt dass die Seite alt bleibt.
       - id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      - name: Kurz warten vor zweitem Versuch
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
       # Suchmaschinen (Bing, Yandex, Seznam, Naver ...) sofort ueber neue Inhalte informieren.
       # Bing ist wichtig, weil ChatGPT und Copilot darueber suchen. Google nutzt IndexNow nicht.

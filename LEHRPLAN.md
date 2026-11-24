@@ -1,14 +1,14 @@
-# Lehrplan Laufzeit
+# Lehrplan Bitweg
 
 Zwei Pfade, ein Ziel: Python sicher für die Schule, C++ auf dem Weg zum Spieleentwickler.
-Stand: November 2026. **Beide Kurse sind komplett.** 102 Lektionen in 34 Abschnitten (mit Abschnittstests), 8 Projekte, 28 freie Aufgaben.
+Stand: November 2026. **Beide Kurse sind komplett**, auf Deutsch und Englisch. 102 Lektionen in 34 Abschnitten (mit Abschnittstests), 8 Projekte, 28 freie Aufgaben. Alle Musterlösungen wurden automatisch mit echtem Python und C++ geprüft.
 
 ## Didaktische Regeln
 
 1. **Erst zeigen, dann tun.** Jede Lektion beginnt mit einer kurzen Erklärkarte und echtem Code. Danach nur noch Übungen.
 2. **Steigende Schwierigkeit.** Erkennen (Multiple Choice), lesen (Ausgabe vorhersagen), ergänzen (Lückentext), ordnen (Zeilen sortieren), reparieren (Fehler finden), schreiben (eigener Code).
 3. **Fehler sind Lernstoff.** Falsche Antworten kommen am Ende der Lektion nochmal. Das Training zeigt wackelige Aufgaben häufiger.
-4. **Echter Code, echte Fehlermeldungen.** Schreib- und Reparatur-Aufgaben laufen mit echtem Python und echtem C++-Compiler. Meldungen werden ins Deutsche übersetzt, der Originaltext bleibt sichtbar.
+4. **Echter Code, echte Fehlermeldungen.** Schreib- und Reparatur-Aufgaben laufen mit echtem Python (online im Browser über Pyodide) und in der PC-Version mit echtem C++-Compiler. Meldungen werden verständlich erklärt, der Originaltext bleibt sichtbar.
 5. **C++ baut auf Python auf.** Viele C++-Karten zeigen den Python-Code daneben. Speicheradressen kommen mit Bild, bevor Pointer drankommen.
 6. **Spielbezug überall.** Leben, Munition, Level, Game-Loop statt abstrakter Beispiele.
 7. **Abschnittstest am Ende jedes Abschnitts** mit gemischten Aufgaben, Leitfaden zum Nachlesen aller Erklärungen.
@@ -61,7 +61,7 @@ Die Reihenfolge 01 bis 09 folgt dem typischen Schulstoff der Oberstufe.
 
 **Warum Raylib vor Unreal:** In Raylib schreibst du den Game-Loop selbst und siehst, was jede Zeile tut. Unreal nimmt dir den Loop ab. Mit Klassen, Pointern und Vererbung aus Abschnitt 07 bis 10 liest sich Unreal-C++ dann wie normales C++ mit ein paar Makros.
 
-**Was nicht ausgeführt wird:** Raylib-, pygame- und Unreal-Code öffnet Fenster oder braucht ein Engine-Projekt. Diese Aufgaben (Python 11.2, C++ 12 und 13) prüft Laufzeit über Regeln. Ausprobieren in VS Code bzw. Unreal, Anleitungen in der Werkstatt.
+**Was nicht ausgeführt wird:** Raylib-, pygame- und Unreal-Code öffnet Fenster oder braucht ein Engine-Projekt. Diese Aufgaben (Python 11.2, C++ 12 und 13) prüft Bitweg über Regeln. Ausprobieren in VS Code bzw. Unreal, Anleitungen in der Werkstatt.
 
 **Andere Engines:** Godot (GDScript ähnelt Python, Lektion Python 11.3) und Unity (C#, sehr nah an C++) sind in der Werkstatt beschrieben.
 
@@ -78,7 +78,7 @@ Projekte und Aufgaben werden freigeschaltet, sobald der passende Abschnitt gesch
 
 ## Ehrlich: Was „100 %“ heißt
 
-Wer alle Lektionen, Projekte und Aufgaben schafft, kann Python und C++ solide auf Fortgeschrittenen-Niveau und hat erste eigene Programme gebaut. Das entspricht grob dem, was eine gute Ausbildung oder die ersten Semester abdecken. Senior-Entwickler wird man danach durch eigene, größere Projekte über Jahre. Laufzeit bereitet genau darauf vor: Das Kursende zeigt den Profi-Fortschritt aus Lektionen, Projekten und Aufgaben.
+Wer alle Lektionen, Projekte und Aufgaben schafft, kann Python und C++ solide auf Fortgeschrittenen-Niveau und hat erste eigene Programme gebaut. Das entspricht grob dem, was eine gute Ausbildung oder die ersten Semester abdecken. Senior-Entwickler wird man danach durch eigene, größere Projekte über Jahre. Bitweg bereitet genau darauf vor: Das Kursende zeigt den Profi-Fortschritt aus Lektionen, Projekten und Aufgaben.
 
 ## Nach dem Kurs
 

@@ -271,6 +271,9 @@ function orderLines(step, ctx) {
   const area = h('div', { class: 'order-area', 'aria-label': t('Dein Programm', 'Your program') });
   const poolEl = h('div', { class: 'order-pool', 'aria-label': t('Verfügbare Zeilen', 'Available lines') });
   let locked = false;
+  // Code in EIN inneres Element: Im Flex-Knopf wuerde der Browser sonst reine Leerzeichen
+  // vor einem markierten Wort verschlucken (Einrueckung unsichtbar) und Luecken zwischen Woerter setzen.
+  const lineCode = text => h('code', { class: 'line-code', html: highlight(text, ctx.lang) });
 
   function render() {
     area.innerHTML = '';
@@ -278,13 +281,11 @@ function orderLines(step, ctx) {
     answer.forEach((item, n) => area.append(h('button', {
       type: 'button', class: 'line-btn', 'aria-label': t(`Zeile ${n + 1}: ${item.text.trim()}. Antippen zum Entfernen`, `Line ${n + 1}: ${item.text.trim()}. Tap to remove`),
       onclick: () => { if (locked) return; answer.splice(n, 1); pool.push(item); render(); },
-      html: highlight(item.text, ctx.lang),
-    })));
+    }, lineCode(item.text))));
     pool.forEach((item, n) => poolEl.append(h('button', {
       type: 'button', class: 'line-btn', 'aria-label': t(`Zeile hinzufügen: ${item.text.trim()}`, `Add line: ${item.text.trim()}`),
       onclick: () => { if (locked) return; pool.splice(n, 1); answer.push(item); render(); },
-      html: highlight(item.text, ctx.lang),
-    })));
+    }, lineCode(item.text))));
     ctx.setReady(answer.length === step.lines.length);
   }
   render();

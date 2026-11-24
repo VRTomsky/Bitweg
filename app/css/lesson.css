@@ -282,6 +282,7 @@ input.gap:focus { outline: none; border-style: solid; border-color: var(--accent
   white-space: pre;
   overflow-x: auto;
 }
+.line-btn .line-code { font: inherit; color: inherit; white-space: pre; background: none; padding: 0; border: 0; border-radius: 0; }
 .line-btn:hover { border-color: var(--accent); }
 .order-area .line-btn { counter-increment: ln; }
 .order-area .line-btn::before { content: counter(ln); min-width: 18px; color: var(--code-dim); font-size: 12px; }

@@ -119,5 +119,23 @@ initCloud();
 
 // Installierbar machen (Handy: "Zum Startbildschirm hinzufuegen")
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === '127.0.0.1' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+    // Dateien dieses Aufrufs an den Offline-Speicher geben (wichtig beim allerersten Besuch)
+    navigator.serviceWorker.ready.then(reg => {
+      const urls = performance.getEntriesByType('resource').map(e => e.name).filter(u => u.startsWith(location.origin));
+      reg.active?.postMessage({ type: 'warm', urls });
+    }).catch(() => {});
+  });
+  // Neue Version veroeffentlicht: Der neue Service Worker uebernimmt kurz nach dem Laden.
+  // Dann einmal neu laden, damit nicht alte und neue Dateien gemischt laufen.
+  // Nur direkt nach dem Oeffnen, nie mitten in einer Lektion.
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  const openedAt = Date.now();
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded || Date.now() - openedAt > 10000 || /^#\/(lektion|test|training\/los|projekt|aufgabe)/.test(location.hash)) return;
+    reloaded = true;
+    location.reload();
+  });
 }

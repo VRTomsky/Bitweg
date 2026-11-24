@@ -24,6 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      # Offline-Speicher bekommt pro Veroeffentlichung eine neue Version (siehe app/sw.js)
+      - name: Version in den Service Worker schreiben
+        run: sed -i "s/__BUILD__/${GITHUB_SHA::12}/" app/sw.js && grep -n "const VERSION" app/sw.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app

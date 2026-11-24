@@ -67,7 +67,10 @@
   <link rel="stylesheet" href="css/onboarding.css">
   <link rel="stylesheet" href="css/projects.css">
   <link rel="stylesheet" href="css/social.css">
+  <!-- Der Infotext in #app ist fuer Suchmaschinen und Browser ohne JavaScript; mit JavaScript sieht ihn niemand -->
+  <style>.js-on .static-intro { display: none; }</style>
   <script>
+    document.documentElement.classList.add('js-on');
     // Farbschema sofort setzen, damit beim Laden nichts aufblitzt
     try {
       var saved = JSON.parse(localStorage.getItem('laufzeit.v1') || '{}');

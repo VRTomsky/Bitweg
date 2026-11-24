@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Datenschutz · Bitweg</title>
-  <meta name="description" content="Datenschutzerklärung von Bitweg">
+  <title>Datenschutzerklärung · Bitweg</title>
+  <meta name="description" content="Datenschutzerklärung von Bitweg: welche Daten die Lern-App verarbeitet, wofür und welche Rechte du hast.">
+  <link rel="canonical" href="https://bitweg.de/datenschutz.html">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/legal.css">
   <script>
     try {
       var saved = JSON.parse(localStorage.getItem('laufzeit.v1') || '{}');
@@ -16,69 +18,146 @@
       document.documentElement.dataset.theme = theme;
     } catch (e) { document.documentElement.dataset.theme = 'light'; }
   </script>
-  <style>
-    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 600; line-height: 1.6; }
-    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
-    h1, h2 { font-family: Fredoka, Nunito, system-ui, sans-serif; line-height: 1.2; }
-    h1 { font-size: 2rem; margin: 16px 0 8px; }
-    h2 { font-size: 1.25rem; margin: 32px 0 8px; }
-    a { color: var(--sky-ink, #1899D6); }
-    .back { font-weight: 800; text-decoration: none; }
-    .muted { color: var(--ink-3); }
-    ul { padding-left: 1.2em; }
-    address { font-style: normal; }
-  </style>
 </head>
 <body>
 <main>
   <a class="back" href="./">← Zurück zu Bitweg</a>
-  <h1>Datenschutzerklärung</h1>
-  <p class="muted">Stand: 17. November 2026</p>
+  <h1>Datenschutz&shy;erklärung</h1>
+  <p class="muted">Stand: 24. November 2026</p>
 
-  <h2>1. Wer ist verantwortlich?</h2>
-  <address>
-    Tom Schulz<br>
-    Hofmattenstraße 8<br>
-    78132 Hornberg<br>
-    Deutschland
-  </address>
-  <p>Bitweg ist ein privates, nicht kommerzielles Projekt. Es gibt keine Werbung, kein Tracking und keine Analyse-Werkzeuge.</p>
+  <nav class="toc" aria-label="Inhalt">
+    <a href="#ueberblick">1. Datenschutz auf einen Blick</a>
+    <a href="#hosting">2. Hosting</a>
+    <a href="#pflicht">3. Allgemeine Hinweise und Pflichtinformationen</a>
+    <a href="#browser">4. Datenerfassung im Browser: keine Cookies</a>
+    <a href="#konto">5. Konto, Freunde und Nachrichten</a>
+    <a href="#login">6. Anmelden mit Google oder Apple</a>
+    <a href="#cdn">7. Python im Browser und Programmbibliotheken (jsDelivr)</a>
+    <a href="#schriften">8. Schriftarten</a>
+    <a href="#aenderungen">9. Änderungen</a>
+  </nav>
 
-  <h2>2. Ohne Konto</h2>
-  <p>Wenn du Bitweg ohne Konto nutzt, bleibt dein Lernstand (Fortschritt, XP, Einstellungen, Profilangaben) nur im Speicher deines Browsers (<em>localStorage</em>) auf deinem Gerät. Er wird nicht an uns geschickt. Du kannst ihn jederzeit unter „Profil“ zurücksetzen oder über die Browser-Einstellungen löschen.</p>
-  <p>Cookies zu Werbe- oder Analysezwecken setzt Bitweg nicht. Was im Browser gespeichert wird, ist für die Funktion der App nötig (§ 25 Abs. 2 Nr. 2 TDDDG).</p>
-
-  <h2>3. Hosting der Webseite</h2>
-  <p>Die Webseite wird über <strong>GitHub Pages</strong> ausgeliefert (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie deine IP-Adresse, Datum und Uhrzeit, die aufgerufene Datei und Browser-Angaben, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren, funktionierenden Webseite (Art. 6 Abs. 1 lit. f DSGVO). GitHub ist unter dem EU-US Data Privacy Framework zertifiziert. Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
-
-  <h2>4. Konto, Freunde und Nachrichten</h2>
-  <p>Für Konten nutzt Bitweg den Dienst <strong>Supabase</strong> (Supabase Inc.) als Auftragsverarbeiter (Art. 28 DSGVO). Die Datenbank liegt in einem Rechenzentrum in <strong>Frankfurt am Main</strong>. Mehr: <a href="https://supabase.com/privacy" rel="noopener">Datenschutzerklärung von Supabase</a>. Wenn du ein Konto erstellst, werden gespeichert:</p>
+  <h2 id="ueberblick">1. Datenschutz auf einen Blick</h2>
+  <h3>Allgemeine Hinweise</h3>
+  <p>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie Bitweg nutzen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können. Ausführliche Informationen finden Sie in den folgenden Abschnitten.</p>
+  <h3>Was ist Bitweg?</h3>
+  <p>Bitweg ist eine kostenlose, private und nicht kommerzielle Lern-App für Python und C++. Es gibt keine Werbung, keine Analyse- oder Tracking-Werkzeuge und keine Cookies.</p>
+  <h3>Wer ist verantwortlich für die Datenerfassung?</h3>
+  <p>Die Datenverarbeitung erfolgt durch den Betreiber von Bitweg. Dessen Kontaktdaten finden Sie im Abschnitt „Hinweis zur verantwortlichen Stelle“.</p>
+  <h3>Wie erfassen wir Ihre Daten?</h3>
   <ul>
-    <li>E-Mail-Adresse (nur zum Einloggen und für „Passwort vergessen“, andere Nutzer sehen sie nicht)</li>
-    <li>Passwort, nur verschlüsselt (als Hash), falls du eins festlegst</li>
-    <li>Profil: Benutzername, Name, „Über mich“, Profil- und Titelbild</li>
-    <li>Lernstand: Fortschritt, XP, Serie, Abzeichen und Einstellungen</li>
-    <li>Freundschaften, Blockierungen und Meldungen</li>
-    <li>Nachrichten, Gruppen, Gruppennachrichten und Anhänge (Bilder, Dateien)</li>
-    <li>technische Anmeldedaten wie Zeitpunkt der Anmeldung und IP-Adresse (bei Supabase, für Sicherheit und Missbrauchsschutz)</li>
+    <li><strong>Ohne Konto</strong> bleibt Ihr Lernstand nur im Speicher Ihres Browsers auf Ihrem Gerät. Er wird nicht an uns geschickt.</li>
+    <li><strong>Mit Konto</strong> werden die Daten gespeichert, die Sie selbst eingeben (z.&nbsp;B. E-Mail-Adresse, Benutzername, Profil, Nachrichten) und Ihr Lernstand.</li>
+    <li><strong>Technisch notwendige Daten</strong> (z.&nbsp;B. IP-Adresse, Zeitpunkt des Aufrufs, Browser) fallen automatisch bei den Diensten an, die die Seite und ihre Dateien ausliefern.</li>
   </ul>
-  <p>Wer was sehen darf: Name, Benutzername, Bilder, „Über mich“, Kurs und Fortschritt sehen andere eingeloggte Nutzer. Nachrichten lesen nur Absender und Empfänger, Gruppennachrichten nur die Mitglieder der Gruppe. Das prüft die Datenbank selbst.</p>
-  <p>Rechtsgrundlage ist die Bereitstellung der Funktionen, die du mit dem Konto nutzen willst (Art. 6 Abs. 1 lit. b DSGVO). Eigene Nachrichten, Bilder und Dateien kannst du jederzeit einzeln löschen, sie verschwinden dann für alle. Alle übrigen Daten bleiben gespeichert, bis du dein Konto löschst. Das geht jederzeit unter <strong>Profil → Konto → Konto löschen</strong>. Dabei werden Profil, Lernstand, Freundschaften und Nachrichten endgültig gelöscht.</p>
+  <h3>Wofür nutzen wir Ihre Daten?</h3>
+  <p>Ausschließlich, um die App bereitzustellen: Lektionen anzeigen, Code ausführen, den Lernstand speichern und, wenn Sie ein Konto haben, Freunde, Chat und Gruppen anbieten. Eine Auswertung Ihres Nutzerverhaltens findet nicht statt.</p>
+  <h3>Welche Rechte haben Sie bezüglich Ihrer Daten?</h3>
+  <p>Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung oder Löschung dieser Daten zu verlangen. Wenn Sie eine Einwilligung zur Datenverarbeitung erteilt haben, können Sie diese jederzeit für die Zukunft widerrufen. Außerdem haben Sie das Recht, unter bestimmten Umständen die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen. Des Weiteren steht Ihnen ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu. Hierzu sowie zu weiteren Fragen zum Thema Datenschutz können Sie sich jederzeit an uns wenden.</p>
 
-  <h2>5. Anmelden mit Google oder Apple</h2>
-  <p>Du kannst dich statt mit E-Mail und Passwort auch mit deinem Google-Konto (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) oder deinem Apple-Konto (Apple Distribution International Ltd., Hollyhill Industrial Estate, Hollyhill, Cork, Irland) anmelden oder es mit deinem Bitweg-Konto verbinden. Dann wirst du zur Anmeldeseite von Google bzw. Apple weitergeleitet. Bitweg bekommt von dort nur deine E-Mail-Adresse, deinen Namen und eine eindeutige Kennung. Dein Passwort bei Google oder Apple erfährt Bitweg nie. Bei Apple kannst du deine E-Mail-Adresse verbergen, dann bekommt Bitweg eine Weiterleitungsadresse von Apple.</p>
-  <p>Google bzw. Apple erfahren dabei, dass du dich bei Bitweg anmeldest. Das passiert nur, wenn du den Knopf „Weiter mit Google/Apple“ bzw. „Verbinden“ selbst antippst. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO. Mehr: <a href="https://policies.google.com/privacy?hl=de" rel="noopener">Datenschutzerklärung von Google</a>, <a href="https://www.apple.com/de/legal/privacy/" rel="noopener">Datenschutzerklärung von Apple</a>.</p>
+  <h2 id="hosting">2. Hosting</h2>
+  <h3>Externes Hosting</h3>
+  <p>Die Webseite bitweg.de wird extern über <strong>GitHub Pages</strong> gehostet. Beim Aufruf verarbeitet der Hoster technisch notwendige Daten, insbesondere Ihre IP-Adresse, Datum und Uhrzeit, die aufgerufene Datei sowie Angaben zu Browser und Betriebssystem, um die Seite auszuliefern und vor Missbrauch zu schützen. Auf diese Daten haben wir keinen Zugriff.</p>
+  <p>Das Hosting erfolgt im Interesse einer sicheren, schnellen und zuverlässigen Bereitstellung unseres Angebots durch einen professionellen Anbieter (Art. 6 Abs. 1 lit. f DSGVO). Der Hoster verarbeitet Ihre Daten nur, soweit dies zur Erfüllung seiner Leistungspflichten erforderlich ist.</p>
+  <p>Wir setzen folgenden Hoster ein:</p>
+  <p class="addr">GitHub Inc. (USA)<br>88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, United States of America</p>
+  <p>GitHub kann Daten in die USA übertragen. GitHub ist nach dem EU-US Data Privacy Framework (DPF) zertifiziert; für zertifizierte Unternehmen besteht ein Angemessenheitsbeschluss der EU-Kommission. Weitere Informationen: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
 
-  <h2>6. Python im Browser und Programm-Bibliotheken</h2>
-  <p>Damit Python-Code direkt im Browser läuft, lädt Bitweg beim ersten Ausführen die Python-Umgebung <em>Pyodide</em> vom Dienst <strong>jsDelivr</strong> (cdn.jsdelivr.net). Von dort kommt auch die Programm-Bibliothek für die Konto-Anmeldung. Dabei wird deine IP-Adresse an jsDelivr bzw. dessen Netzwerk-Partner (Cloudflare, Fastly, Bunny.net und GCore, teils auch in den USA) übertragen, damit die Dateien ausgeliefert werden können. Rechtsgrundlage ist unser berechtigtes Interesse, die Lern-Funktionen schnell und zuverlässig bereitzustellen (Art. 6 Abs. 1 lit. f DSGVO). Mehr: <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" rel="noopener">Datenschutzerklärung von jsDelivr</a>.</p>
-  <p>Schriftarten liegen direkt auf bitweg.de, dafür werden keine Daten an Dritte geschickt.</p>
+  <h2 id="pflicht">3. Allgemeine Hinweise und Pflicht&shy;informationen</h2>
+  <h3>Datenschutz</h3>
+  <p>Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.</p>
+  <p>Wir weisen darauf hin, dass die Datenübertragung im Internet (z.&nbsp;B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.</p>
 
-  <h2>7. Deine Rechte</h2>
-  <p>Du hast das Recht auf Auskunft über deine gespeicherten Daten (Art. 15 DSGVO), auf Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 21). Vieles kannst du direkt in der App erledigen: Profil bearbeiten, Lernstand als Datei herunterladen, Konto löschen. Für alles andere genügt eine Nachricht an die Adresse oben.</p>
-  <p>Du kannst dich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren, zum Beispiel beim <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener">Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg</a>.</p>
+  <h3>Hinweis zur verantwortlichen Stelle</h3>
+  <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
+  <p class="addr">Tom Schulz<br>Hofmattenstraße 8<br>78132 Hornberg<br>Deutschland<br><br>E-Mail: <a href="mailto:anfragen.tom@gmail.com">anfragen.tom@gmail.com</a></p>
+  <p>Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.&nbsp;B. Namen, E-Mail-Adressen o.&nbsp;Ä.) entscheidet.</p>
 
-  <h2>8. Änderungen</h2>
-  <p>Wenn Bitweg neue Funktionen bekommt, passen wir diese Erklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
+  <h3>Speicherdauer</h3>
+  <p>Soweit in dieser Datenschutzerklärung keine speziellere Speicherdauer genannt wird, verbleiben Ihre personenbezogenen Daten bei uns, bis der Zweck für die Datenverarbeitung entfällt. Daten Ihres Kontos werden gespeichert, bis Sie das Konto löschen (siehe Abschnitt 5). Wenn Sie ein berechtigtes Löschersuchen geltend machen oder eine Einwilligung widerrufen, werden Ihre Daten gelöscht, sofern wir keine anderen rechtlich zulässigen Gründe für die Speicherung haben.</p>
+
+  <h3>Allgemeine Hinweise zu den Rechtsgrundlagen</h3>
+  <p>Sofern Sie in die Datenverarbeitung eingewilligt haben, verarbeiten wir Ihre personenbezogenen Daten auf Grundlage von Art. 6 Abs. 1 lit. a DSGVO. Sind Ihre Daten zur Bereitstellung der von Ihnen genutzten Funktionen erforderlich (z.&nbsp;B. Ihr Konto), verarbeiten wir sie auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Sind sie zur Erfüllung einer rechtlichen Verpflichtung erforderlich, auf Grundlage von Art. 6 Abs. 1 lit. c DSGVO. Die Verarbeitung kann ferner auf Grundlage unseres berechtigten Interesses nach Art. 6 Abs. 1 lit. f DSGVO erfolgen. Der Zugriff auf Informationen in Ihrem Endgerät (lokaler Speicher des Browsers) erfolgt auf Grundlage von § 25 Abs. 2 Nr. 2 TDDDG, weil er für die Funktion der App unbedingt erforderlich ist. Über die im Einzelfall einschlägigen Rechtsgrundlagen informieren die folgenden Abschnitte.</p>
+
+  <h3>Empfänger von personenbezogenen Daten</h3>
+  <p>Wir geben personenbezogene Daten nur an externe Stellen weiter, wenn dies für die Bereitstellung der App erforderlich ist, wenn wir gesetzlich hierzu verpflichtet sind oder wenn eine sonstige Rechtsgrundlage die Weitergabe erlaubt. Die eingesetzten Dienstleister sind in den Abschnitten 2 sowie 5 bis 7 aufgeführt. Beim Einsatz von Auftragsverarbeitern geben wir personenbezogene Daten nur auf Grundlage eines Vertrags über Auftragsverarbeitung weiter.</p>
+
+  <h3>Widerruf Ihrer Einwilligung zur Datenverarbeitung</h3>
+  <p>Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.</p>
+
+  <h3>Widerspruchsrecht gegen die Datenerhebung in besonderen Fällen sowie gegen Direktwerbung (Art. 21 DSGVO)</h3>
+  <p class="caps">Wenn die Datenverarbeitung auf Grundlage von Art. 6 Abs. 1 lit. e oder f DSGVO erfolgt, haben Sie jederzeit das Recht, aus Gründen, die sich aus Ihrer besonderen Situation ergeben, gegen die Verarbeitung Ihrer personenbezogenen Daten Widerspruch einzulegen; dies gilt auch für ein auf diese Bestimmungen gestütztes Profiling. Die jeweilige Rechtsgrundlage, auf denen eine Verarbeitung beruht, entnehmen Sie dieser Datenschutzerklärung. Wenn Sie Widerspruch einlegen, werden wir Ihre betroffenen personenbezogenen Daten nicht mehr verarbeiten, es sei denn, wir können zwingende schutzwürdige Gründe für die Verarbeitung nachweisen, die Ihre Interessen, Rechte und Freiheiten überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen (Widerspruch nach Art. 21 Abs. 1 DSGVO).</p>
+  <p class="caps">Werden Ihre personenbezogenen Daten verarbeitet, um Direktwerbung zu betreiben, so haben Sie das Recht, jederzeit Widerspruch gegen die Verarbeitung Sie betreffender personenbezogener Daten zum Zwecke derartiger Werbung einzulegen; dies gilt auch für das Profiling, soweit es mit solcher Direktwerbung in Verbindung steht. Wenn Sie widersprechen, werden Ihre personenbezogenen Daten anschließend nicht mehr zum Zwecke der Direktwerbung verwendet (Widerspruch nach Art. 21 Abs. 2 DSGVO).</p>
+  <p>Bitweg betreibt keine Direktwerbung.</p>
+
+  <h3>Beschwerderecht bei der zuständigen Aufsichtsbehörde</h3>
+  <p>Im Falle von Verstößen gegen die DSGVO steht den Betroffenen ein Beschwerderecht bei einer Aufsichtsbehörde zu, insbesondere in dem Mitgliedstaat ihres gewöhnlichen Aufenthalts, ihres Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes. Für uns zuständig ist der <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener">Landesbeauftragte für den Datenschutz und die Informationsfreiheit Baden-Württemberg</a>. Das Beschwerderecht besteht unbeschadet anderweitiger verwaltungsrechtlicher oder gerichtlicher Rechtsbehelfe.</p>
+
+  <h3>Recht auf Datenübertragbarkeit</h3>
+  <p>Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an einen Dritten in einem gängigen, maschinenlesbaren Format aushändigen zu lassen. Ihren Lernstand können Sie jederzeit selbst unter „Profil“ als Datei herunterladen.</p>
+
+  <h3>Auskunft, Berichtigung und Löschung</h3>
+  <p>Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung und ggf. ein Recht auf Berichtigung oder Löschung dieser Daten. Vieles können Sie direkt in der App erledigen: Profil bearbeiten, eigene Nachrichten löschen, Konto löschen. Für alles andere können Sie sich jederzeit an uns wenden.</p>
+
+  <h3>Recht auf Einschränkung der Verarbeitung</h3>
+  <p>Sie haben das Recht, die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen. Hierzu können Sie sich jederzeit an uns wenden. Das Recht auf Einschränkung der Verarbeitung besteht in folgenden Fällen:</p>
+  <ul>
+    <li>Wenn Sie die Richtigkeit Ihrer bei uns gespeicherten personenbezogenen Daten bestreiten, benötigen wir in der Regel Zeit, um dies zu überprüfen. Für die Dauer der Prüfung haben Sie das Recht, die Einschränkung der Verarbeitung zu verlangen.</li>
+    <li>Wenn die Verarbeitung Ihrer personenbezogenen Daten unrechtmäßig geschah oder geschieht, können Sie statt der Löschung die Einschränkung der Datenverarbeitung verlangen.</li>
+    <li>Wenn wir Ihre personenbezogenen Daten nicht mehr benötigen, Sie sie jedoch zur Ausübung, Verteidigung oder Geltendmachung von Rechtsansprüchen benötigen, haben Sie das Recht, statt der Löschung die Einschränkung der Verarbeitung zu verlangen.</li>
+    <li>Wenn Sie einen Widerspruch nach Art. 21 Abs. 1 DSGVO eingelegt haben, muss eine Abwägung zwischen Ihren und unseren Interessen vorgenommen werden. Solange noch nicht feststeht, wessen Interessen überwiegen, haben Sie das Recht, die Einschränkung der Verarbeitung zu verlangen.</li>
+  </ul>
+  <p>Wenn Sie die Verarbeitung Ihrer personenbezogenen Daten eingeschränkt haben, dürfen diese Daten, von ihrer Speicherung abgesehen, nur mit Ihrer Einwilligung oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen oder zum Schutz der Rechte einer anderen natürlichen oder juristischen Person oder aus Gründen eines wichtigen öffentlichen Interesses der Europäischen Union oder eines Mitgliedstaats verarbeitet werden.</p>
+
+  <h3>SSL- bzw. TLS-Verschlüsselung</h3>
+  <p>Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte, wie zum Beispiel Anmeldedaten und Nachrichten, eine SSL- bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers mit „https://“ beginnt, und an dem Schloss-Symbol in Ihrer Browserzeile. Wenn die SSL- bzw. TLS-Verschlüsselung aktiviert ist, können die Daten, die Sie an uns übermitteln, nicht von Dritten mitgelesen werden.</p>
+
+  <h3>Widerspruch gegen Werbe-E-Mails</h3>
+  <p>Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit widersprochen. Der Betreiber der Seiten behält sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-E-Mails, vor.</p>
+
+  <h2 id="browser">4. Datenerfassung im Browser: keine Cookies</h2>
+  <p>Bitweg setzt <strong>keine Cookies</strong> und nutzt keine Analyse- oder Tracking-Werkzeuge. Im Speicher Ihres Browsers (<em>localStorage</em>, <em>sessionStorage</em> und Offline-Zwischenspeicher) legt die App nur ab, was für ihre Funktion nötig ist:</p>
+  <ul>
+    <li>Ihren Lernstand (Fortschritt, XP, Serien, Abzeichen), Ihre Einstellungen und Profilangaben,</li>
+    <li>wenn Sie ein Konto haben: die Anmeldung, damit Sie eingeloggt bleiben, und welches Konto zu dem gespeicherten Lernstand gehört,</li>
+    <li>während einer Anmeldung mit Google oder Apple kurzzeitig einen Merker, der danach gelöscht wird,</li>
+    <li>Dateien der Webseite, damit sie auch ohne Internetverbindung startet.</li>
+  </ul>
+  <p>Ohne Konto werden diese Daten nicht an uns übertragen. Sie können sie jederzeit unter „Profil“ zurücksetzen oder über die Einstellungen Ihres Browsers löschen. Rechtsgrundlage ist § 25 Abs. 2 Nr. 2 TDDDG (unbedingt erforderlich für den von Ihnen gewünschten Dienst) und Art. 6 Abs. 1 lit. b DSGVO.</p>
+  <p><strong>Tipp für geteilte Geräte</strong> (z.&nbsp;B. in der Schule): Nutzen Sie ein Konto und loggen Sie sich nach dem Lernen aus. Beim Ausloggen wird der Speicher im Browser geleert.</p>
+
+  <h2 id="konto">5. Konto, Freunde und Nachrichten</h2>
+  <p>Ein Konto ist freiwillig. Für Konten, Freunde, Nachrichten und Gruppen nutzt Bitweg den Dienst <strong>Supabase</strong> (Supabase Pte. Ltd., Singapur) als Auftragsverarbeiter (Art. 28 DSGVO). Die Datenbank und die Dateien liegen in einem Rechenzentrum in <strong>Frankfurt am Main</strong> (Amazon Web Services, Region eu-central-1). Wenn Sie ein Konto erstellen, werden gespeichert:</p>
+  <ul>
+    <li>E-Mail-Adresse (nur zum Einloggen und für „Passwort vergessen“; andere Nutzer sehen sie nicht),</li>
+    <li>Passwort, nur verschlüsselt als Hash, falls Sie eines festlegen,</li>
+    <li>Profil: Benutzername, Name, „Über mich“, Profil- und Titelbild,</li>
+    <li>Lernstand: Fortschritt, XP, Serie, Abzeichen und Einstellungen,</li>
+    <li>Freundschaften, Blockierungen und Meldungen,</li>
+    <li>Nachrichten, Gruppen, Gruppennachrichten sowie angehängte Bilder und Dateien,</li>
+    <li>technische Anmeldedaten wie Zeitpunkt der Anmeldung und IP-Adresse (bei Supabase, für Sicherheit und Missbrauchsschutz).</li>
+  </ul>
+  <p><strong>Wer was sieht:</strong> Name, Benutzername, Bilder, „Über mich“, Kurs und Fortschritt sehen andere eingeloggte Nutzer. Nachrichten lesen nur Absender und Empfänger, Gruppennachrichten nur die Mitglieder der Gruppe. Das prüft die Datenbank selbst. Meldungen über andere Nutzer sieht nur der Betreiber.</p>
+  <p><strong>Rechtsgrundlage</strong> ist die Bereitstellung der Funktionen, die Sie mit dem Konto nutzen möchten (Art. 6 Abs. 1 lit. b DSGVO). Der Schutz vor Missbrauch erfolgt auf Grundlage unseres berechtigten Interesses (Art. 6 Abs. 1 lit. f DSGVO).</p>
+  <p><strong>Löschen:</strong> Eigene Nachrichten, Bilder und Dateien können Sie jederzeit einzeln löschen; sie verschwinden dann für alle. Ihr gesamtes Konto können Sie unter <strong>Profil → Konto → Konto löschen</strong> löschen. Dabei werden Profil, Lernstand, Freundschaften und Nachrichten endgültig gelöscht.</p>
+  <p>Soweit Supabase Daten außerhalb der EU verarbeitet (z.&nbsp;B. für Support), stützt sich das auf die Garantien im Auftragsverarbeitungsvertrag von Supabase (EU-Standardvertragsklauseln, Art. 46 DSGVO). Weitere Informationen: <a href="https://supabase.com/privacy" rel="noopener">Datenschutzerklärung von Supabase</a>.</p>
+
+  <h2 id="login">6. Anmelden mit Google oder Apple</h2>
+  <p>Statt mit E-Mail und Passwort können Sie sich mit Ihrem Google-Konto (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) oder Ihrem Apple-Konto (Apple Distribution International Ltd., Hollyhill Industrial Estate, Hollyhill, Cork, Irland) anmelden oder dieses mit Ihrem Bitweg-Konto verbinden. Dazu werden Sie auf die Anmeldeseite von Google bzw. Apple weitergeleitet. Bitweg erhält von dort nur Ihre E-Mail-Adresse, Ihren Namen und eine eindeutige Kennung. Ihr Passwort bei Google oder Apple erfährt Bitweg nie. Bei Apple können Sie Ihre E-Mail-Adresse verbergen; dann erhält Bitweg eine Weiterleitungsadresse von Apple.</p>
+  <p>Google bzw. Apple erfahren dabei, dass Sie sich bei Bitweg anmelden, und setzen auf ihren eigenen Seiten eigene Cookies. Das passiert nur, wenn Sie selbst auf „Weiter mit Google“, „Weiter mit Apple“ oder „Verbinden“ tippen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO. Google und Apple können Daten in die USA übertragen; beide sind nach dem EU-US Data Privacy Framework zertifiziert. Weitere Informationen: <a href="https://policies.google.com/privacy?hl=de" rel="noopener">Datenschutzerklärung von Google</a>, <a href="https://www.apple.com/de/legal/privacy/" rel="noopener">Datenschutzerklärung von Apple</a>.</p>
+
+  <h2 id="cdn">7. Python im Browser und Programm&shy;bibliotheken (jsDelivr)</h2>
+  <p>Damit Python-Code direkt im Browser läuft, lädt Bitweg beim ersten Ausführen die Python-Umgebung <em>Pyodide</em> vom Dienst <strong>jsDelivr</strong> (cdn.jsdelivr.net, betrieben von Volentio JSD Limited, England und Wales; für das Vereinigte Königreich besteht ein Angemessenheitsbeschluss der EU). Von dort kommt auch die Programmbibliothek für die Konto-Anmeldung. Dabei wird Ihre IP-Adresse an jsDelivr übertragen, damit die Dateien ausgeliefert werden können. jsDelivr nutzt dafür die Netzwerke der Anbieter <strong>Cloudflare, Fastly, Bunny.net und GCore</strong>; dabei kann es auch zu einer Übertragung in die USA kommen. Cookies werden dabei nicht gesetzt.</p>
+  <p>Rechtsgrundlage ist unser berechtigtes Interesse, die Lern-Funktionen schnell und zuverlässig bereitzustellen (Art. 6 Abs. 1 lit. f DSGVO). Weitere Informationen: <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" rel="noopener">Datenschutzerklärung von jsDelivr</a>.</p>
+
+  <h2 id="schriften">8. Schriftarten</h2>
+  <p>Die Schriftarten (Fredoka, Nunito, JetBrains Mono) sind lokal auf bitweg.de gespeichert. Beim Laden der Seite wird keine Verbindung zu Google Fonts oder anderen Schriftanbietern aufgebaut.</p>
+
+  <h2 id="aenderungen">9. Änderungen</h2>
+  <p>Wenn Bitweg neue Funktionen bekommt, passen wir diese Datenschutzerklärung an. Es gilt die jeweils hier veröffentlichte Fassung.</p>
+
+  <p class="muted source">Allgemeine Abschnitte auf Grundlage von <a href="https://www.e-recht24.de" rel="noopener">e-recht24.de</a>, ergänzt um die Angaben zu Bitweg.</p>
+  <footer class="muted"><a href="./">Bitweg</a> · <a href="ueber.html">Über Bitweg</a> · <a href="impressum.html">Impressum</a></footer>
 </main>
 </body>
 </html>

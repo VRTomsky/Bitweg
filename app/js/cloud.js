@@ -143,6 +143,11 @@ async function supabaseBackend() {
     },
     /** Mit welchen Anbietern kann sich dieses Konto anmelden? (frisch vom Server) */
     async identities() {
+      // Erst aus der gespeicherten Sitzung lesen: kostet keine Anfrage. /auth/v1/user zaehlt bei Supabase
+      // zum Limit pro IP (30 in 5 Minuten), und in der Schule teilen sich alle eine IP.
+      const { data: { session } } = await sb.auth.getSession();
+      const cached = session?.user?.identities;
+      if (Array.isArray(cached) && cached.length) return cached.map(i => i.provider);
       const data = must(await withTimeout(sb.auth.getUserIdentities(), 15000));
       return (data.identities || []).map(i => i.provider);
     },

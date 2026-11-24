@@ -224,7 +224,8 @@ const STEPS = {
           h('button', { type: 'button', class: 'btn btn-go', onclick: () => go('langs') }, t('Los geht’s', 'Let’s go')),
           CLOUD_ENABLED && !currentUser() ? h('a', { class: 'btn btn-sky', href: '#/konto' }, t('Ich habe schon ein Konto', 'I already have an account')) : null,
           desktopBtn,
-          h('label', { class: 'btn btn-ghost' }, t('Sicherung aus Datei laden', 'Load backup from file'), fileInput)))));
+          h('label', { class: 'btn btn-ghost' }, t('Sicherung aus Datei laden', 'Load backup from file'), fileInput)),
+        h('p', { class: 'onb-legal' }, h('a', { href: 'ueber.html' }, t('Über Bitweg', 'About Bitweg')), ' · ', h('a', { href: 'datenschutz.html' }, t('Datenschutz', 'Privacy')), ' · ', h('a', { href: 'impressum.html' }, t('Impressum', 'Legal notice'))))));
     // Gibt es Sicherungen auf dem Desktop? Dann die neueste direkt anbieten
     listBackups().then(res => {
       const newest = res.ok && res.files.find(f => !f.name.includes('-vorher-'));

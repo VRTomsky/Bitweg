@@ -24,4 +24,5 @@
 - [Bitweg starten](https://bitweg.de/)
 - [Über Bitweg und Infos für Lehrkräfte](https://bitweg.de/ueber.html)
 - [Datenschutz](https://bitweg.de/datenschutz.html)
+- [Impressum](https://bitweg.de/impressum.html)
 - [Quellcode](https://github.com/VRTomsky/Bitweg)

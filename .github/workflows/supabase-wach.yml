@@ -1,0 +1,30 @@
+# Haelt die kostenlose Supabase-Datenbank wach.
+# Supabase legt Gratis-Projekte nach einer Woche ohne Nutzung schlafen (z. B. in den Ferien).
+# Dann gehen Login, Freunde und Chat nicht, bis man das Projekt im Dashboard wieder startet.
+# Dieser Job fragt zweimal am Tag, ob ein Benutzername frei ist: eine echte, harmlose Datenbank-Abfrage.
+# Er nutzt nur den oeffentlichen Schluessel aus app/js/config.js, kein Geheimnis.
+# Supabase garantiert nicht, dass das immer reicht. Nach den Ferien im Zweifel einmal ins Dashboard schauen.
+# Hinweis: GitHub pausiert geplante Jobs, wenn 60 Tage lang nichts im Repo passiert.
+name: Supabase wach halten
+
+on:
+  schedule:
+    - cron: '17 6,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Datenbank kurz fragen
+        run: |
+          URL=$(sed -n "s/.*SUPABASE_URL = '\([^']*\)'.*/\1/p" app/js/config.js)
+          KEY=$(sed -n "s/.*SUPABASE_ANON_KEY = '\([^']*\)'.*/\1/p" app/js/config.js)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$URL/rest/v1/rpc/username_available" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{"name":"wachhalten"}')
+          echo "Antwort von Supabase: $code"
+          test "$code" = "200"

@@ -55,7 +55,7 @@ Erst nach Schritt 5 ausführen, die Gruppen nutzen denselben Speicher.
 
 1. **SQL Editor**, **New query**.
 2. Inhalt von `supabase/03-gruppen.sql` einfügen, **Run**.
-3. Fertig. Unter **Freunde** erscheint oben „Gruppen“ mit dem Knopf „Neue Gruppe“. Regeln: nur eigene Freunde hinzufügen, höchstens 30 Mitglieder, lesen und schreiben nur Mitglieder. Wer eine Gruppe gründet, kann sie umbenennen und Mitglieder entfernen.
+3. Fertig. Unter **Freunde** erscheint oben „Gruppen“ mit dem Knopf „Neue Gruppe“. Regeln: nur eigene Freunde hinzufügen, höchstens 60 Mitglieder (mit `08-klassen.sql`, vorher 30), lesen und schreiben nur Mitglieder. Wer eine Gruppe gründet, kann sie umbenennen und Mitglieder entfernen.
 
 Solange 03 nicht ausgeführt ist, zeigt die App statt der Gruppen einen Hinweis. Der normale Chat läuft trotzdem.
 

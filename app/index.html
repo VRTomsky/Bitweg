@@ -10,8 +10,53 @@
   <meta name="apple-mobile-web-app-title" content="Bitweg">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-  <title>Bitweg</title>
-  <meta name="description" content="Python und C++ lernen, Lektion für Lektion.">
+  <title>Bitweg: Python und C++ lernen, kostenlos im Browser</title>
+  <meta name="description" content="Bitweg ist eine kostenlose Lern-App für Python und C++: kurze Lektionen, echter Code direkt im Browser, XP, Serien und Abzeichen. Gemacht für Schule und Informatikunterricht, ohne Installation.">
+  <link rel="canonical" href="https://bitweg.de/">
+  <meta name="robots" content="index, follow">
+  <meta name="application-name" content="Bitweg">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bitweg">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:url" content="https://bitweg.de/">
+  <meta property="og:title" content="Bitweg: Python und C++ lernen, kostenlos im Browser">
+  <meta property="og:description" content="Kurze Lektionen, echter Code im Browser, XP und Serien. Kostenlos und ohne Installation, ideal für den Informatikunterricht.">
+  <meta property="og:image" content="https://bitweg.de/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bitweg: Programmieren lernen mit Python und C++">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bitweg.de/#website",
+        "name": "Bitweg",
+        "alternateName": ["bitweg.de", "Bitweg Programmieren lernen"],
+        "url": "https://bitweg.de/",
+        "inLanguage": "de"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://bitweg.de/#app",
+        "name": "Bitweg",
+        "url": "https://bitweg.de/",
+        "description": "Kostenlose Lern-App für Python und C++ mit kurzen Lektionen, echtem Code im Browser, Training, Projekten, Freunden und Gruppen. Für Schüler, Schule und Informatikunterricht.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Browser (Windows, macOS, Linux, Android, iOS)",
+        "inLanguage": ["de", "en"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "educationalLevel": "Anfänger bis Fortgeschrittene",
+        "teaches": ["Python", "C++", "Programmieren", "Algorithmen", "Objektorientierung"],
+        "audience": { "@type": "EducationalAudience", "educationalRole": ["student", "teacher"] },
+        "sameAs": ["https://github.com/VRTomsky/Bitweg"]
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="stylesheet" href="css/tokens.css">
@@ -31,9 +76,22 @@
   </script>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <!-- Wird sofort von der App ersetzt. Steht hier fuer Suchmaschinen, KI-Crawler und Browser ohne JavaScript. -->
+    <main class="static-intro">
+      <h1>Bitweg: Python und C++ lernen</h1>
+      <p>Bitweg ist eine kostenlose Lern-App fürs Programmieren, im Stil einer Sprachlern-App: kurze Lektionen, sofortiges Feedback, XP, Tages-Serien und Abzeichen. Der Code läuft echt im Browser, ohne Installation und ohne Konto.</p>
+      <ul>
+        <li><strong>Python</strong>: 15 Abschnitte mit 45 Lektionen, von <code>print()</code> über Schleifen, Listen und Funktionen bis zu Klassen, Rekursion und kleinen Spielen.</li>
+        <li><strong>C++</strong>: 19 Abschnitte mit 57 Lektionen, von den Grundlagen über Pointer und Klassen bis zur Spieleprogrammierung.</li>
+        <li>Training mit immer neuen Aufgaben, Projekte, freie Aufgaben und ein Labor für eigene Programme.</li>
+        <li>Optional mit Konto: Fortschritt auf allen Geräten, Freunde, Chat und Gruppen, z. B. für eine Schulklasse.</li>
+      </ul>
+      <p><a href="ueber.html">Mehr über Bitweg und Infos für Lehrkräfte</a> · <a href="datenschutz.html">Datenschutz</a> · <a href="https://github.com/VRTomsky/Bitweg">Quellcode auf GitHub</a></p>
+      <noscript><p><strong>Bitweg braucht JavaScript.</strong> Bitte im Browser einschalten.</p></noscript>
+    </main>
+  </div>
   <div id="toasts" aria-live="polite"></div>
-  <noscript>Bitweg braucht JavaScript.</noscript>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,5 @@
+# Bitweg: alles darf gelesen werden, auch von KI-Crawlern.
+User-agent: *
+Allow: /
+
+Sitemap: https://bitweg.de/sitemap.xml

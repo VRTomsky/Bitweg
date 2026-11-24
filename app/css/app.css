@@ -967,3 +967,7 @@ dialog.crop-dialog .row-actions .btn { width: auto; }
 @media (max-width: 520px) {
   .prof-body .prof-edit { min-width: 0; max-width: 100%; padding: 8px 14px; font-size: var(--text-sm); white-space: normal; }
 }
+
+/* Text fuer Suchmaschinen und Browser ohne JavaScript; die App ersetzt ihn sofort */
+.static-intro { max-width: 680px; margin: 0 auto; padding: 40px 16px; line-height: 1.6; }
+.static-intro h1 { font-family: Fredoka, Nunito, system-ui, sans-serif; font-size: 2rem; line-height: 1.2; }

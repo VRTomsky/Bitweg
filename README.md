@@ -2,7 +2,7 @@
 
 Python und C++ lernen, Lektion für Lektion, im Stil einer Sprachlern-App: kurze Aufgaben, XP, Serien, Abzeichen, Gold-Lektionen, Projekte und freie Aufgaben. Dazu Konten, Freunde, Nachrichten und Anfeuern.
 
-**Online ausprobieren:** https://bitweg.de/
+**Online ausprobieren:** https://bitweg.de/ · [Über Bitweg und Infos für Lehrkräfte](https://bitweg.de/ueber.html) · [Datenschutz](https://bitweg.de/datenschutz.html) · [Impressum](https://bitweg.de/impressum.html)
 
 Am Handy: Link in Chrome öffnen, Menü (⋮) → **App installieren** bzw. **Zum Startbildschirm hinzufügen**. Dann startet Bitweg wie eine App. Chatten, Gruppen und Python gehen auch dort, C++ nur am PC.
 

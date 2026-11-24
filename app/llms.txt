@@ -1,0 +1,28 @@
+# Bitweg
+
+> Bitweg (bitweg.de) ist eine kostenlose, deutschsprachige Lern-App für Python und C++ im Stil einer Sprachlern-App: kurze Lektionen, sofortiges Feedback, XP, Tages-Serien, Abzeichen. Der Code läuft echt im Browser, ohne Installation. Gemacht für Schüler, Schule und Informatikunterricht. Nicht zu verwechseln mit „Bitwig“, einer Musiksoftware.
+
+## Was Bitweg bietet
+
+- Python-Kurs: 15 Abschnitte, 45 Lektionen (Ausgabe, Variablen, Eingaben, Verzweigungen, Schleifen, Listen, Strings, Funktionen, Dictionaries, Fehlerbehandlung, Dateien, Klassen, Rekursion, Algorithmen, kleine Spiele).
+- C++-Kurs: 19 Abschnitte, 57 Lektionen (Grundlagen, Typen, Schleifen, Funktionen, Arrays, vector, string, Referenzen, Pointer, Speicherverwaltung, Klassen, Vererbung, STL, RAII, Spielarchitektur, Raylib, Unreal-C++).
+- Übungsarten: Multiple Choice, Ausgabe vorhersagen, Lückentext, Zeilen ordnen, Code reparieren, Code selbst schreiben (wird echt ausgeführt und geprüft).
+- Training mit zufällig erzeugten Aufgaben, Abschnittstests, Gold-Lektionen, Projekte mit mehreren Etappen, freie Aufgaben, ein Labor für eigene Programme.
+- Python läuft im Browser über Pyodide (WebAssembly). Echtes C++ gibt es in der Version für den eigenen PC (start.bat, mit g++ oder MSVC).
+- Optional ein Konto: Fortschritt auf allen Geräten, Freunde, Chat mit Bildern und Dateien, Gruppen (z. B. eine Schulklasse), Anfeuern, Rangliste. Login mit E-Mail oder Google.
+- Ohne Konto bleibt alles im Browser. Keine Werbung, keine Cookies, kein Tracking.
+- Oberfläche auf Deutsch und Englisch.
+
+## Technik
+
+- Statische Single-Page-App (HTML, CSS, JavaScript-Module, kein Build-Schritt), gehostet über GitHub Pages.
+- Konten und Chat über Supabase (PostgreSQL in Frankfurt, Zugriffsregeln per Row Level Security).
+- Open Source: https://github.com/VRTomsky/Bitweg
+
+## Links
+
+- [Bitweg starten](https://bitweg.de/)
+- [Über Bitweg und Infos für Lehrkräfte](https://bitweg.de/ueber.html)
+- [Datenschutz](https://bitweg.de/datenschutz.html)
+- [Impressum](https://bitweg.de/impressum.html)
+- [Quellcode](https://github.com/VRTomsky/Bitweg)

@@ -55,7 +55,7 @@ Erst nach Schritt 5 ausführen, die Gruppen nutzen denselben Speicher.
 
 1. **SQL Editor**, **New query**.
 2. Inhalt von `supabase/03-gruppen.sql` einfügen, **Run**.
-3. Fertig. Unter **Freunde** erscheint oben „Gruppen“ mit dem Knopf „Neue Gruppe“. Regeln: nur eigene Freunde hinzufügen, höchstens 30 Mitglieder, lesen und schreiben nur Mitglieder. Wer eine Gruppe gründet, kann sie umbenennen und Mitglieder entfernen.
+3. Fertig. Unter **Freunde** erscheint oben „Gruppen“ mit dem Knopf „Neue Gruppe“. Regeln: nur eigene Freunde hinzufügen, höchstens 60 Mitglieder (mit `08-klassen.sql`, vorher 30), lesen und schreiben nur Mitglieder. Wer eine Gruppe gründet, kann sie umbenennen und Mitglieder entfernen.
 
 Solange 03 nicht ausgeführt ist, zeigt die App statt der Gruppen einen Hinweis. Der normale Chat läuft trotzdem.
 
@@ -137,6 +137,14 @@ Braucht ein Konto im **Apple Developer Program** (https://developer.apple.com/pr
 - **In WhatsApp, Instagram und TikTok** blockt Google die Anmeldung im eingebauten Browser. Die App zeigt dort einen Hinweis, die Seite erst im richtigen Browser zu öffnen.
 - **Lokale Version** (`start.bat`): Die Knöpfe gibt es dort auch, weil `http://127.0.0.1:5741/` schon bei den Redirect URLs steht (Schritt 3).
 
+## 9. Datenschutzerklärung
+
+Liegt unter `app/datenschutz.html` (online: https://bitweg.de/datenschutz.html), das Impressum unter `app/impressum.html`. Beide sind von Startseite, Login, Registrierung und Profil verlinkt. Bei Google steht genau diese Adresse auf der **Branding**-Seite. Wenn Bitweg neue Dienste bekommt, muss die Seite angepasst werden.
+
+Supabase: Den Vertrag zur Auftragsverarbeitung (DPA) kannst du im Dashboard unter **Organization Settings → Legal Documents** anfordern bzw. unterschreiben.
+
+Die Schriften (Fredoka, Nunito, JetBrains Mono) liegen in `app/fonts/` auf bitweg.de selbst und werden nicht mehr von Google Fonts geladen.
+
 ## 10. Nachrichten löschen und Chats leeren (Erweiterung)
 
 Erst nach Schritt 7 ausführen.
@@ -159,13 +167,18 @@ Danach:
 
 Erst nach Schritt 10 ausführen. **SQL Editor**, **New query**, Inhalt von `supabase/07-admin-abzeichen.sql` einfügen, **Run**. Danach steht neben dem Namen jedes Admins ein kleines rotes **ADMIN**: im Profil, in Suche, Freundesliste, Rangliste, Chat und Gruppen.
 
-## 9. Datenschutzerklärung
+## 12. Für eine Schulklasse (wichtig vor dem ersten Einsatz)
 
-Liegt unter `app/datenschutz.html` (online: https://bitweg.de/datenschutz.html) und ist von Login, Registrierung und Profil verlinkt. Bei Google steht genau diese Adresse auf der **Branding**-Seite. Wenn Bitweg neue Dienste bekommt, muss die Seite angepasst werden.
+In der Schule gehen meist alle Geräte über **eine** Internet-Adresse ins Netz. Supabase zählt manche Grenzen pro Adresse, also für die ganze Klasse zusammen.
 
-Supabase: Den Vertrag zur Auftragsverarbeitung (DPA) kannst du im Dashboard unter **Organization Settings → Legal Documents** anfordern bzw. unterschreiben.
-
-Die Schriften (Fredoka, Nunito, JetBrains Mono) liegen in `app/fonts/` auf bitweg.de selbst und werden nicht mehr von Google Fonts geladen.
+1. **Gruppen bis 60 Mitglieder:** `supabase/08-klassen.sql` im SQL Editor ausführen (sonst passt eine Klasse mit 30 Schülern plus Lehrkraft nicht in eine Gruppe).
+2. **Anmelde-Limit hochsetzen:** Supabase, **Authentication → Rate Limits**. „Sign-ups and sign-ins“ steht auf 30 pro 5 Minuten pro IP. Für eine Klasse auf z. B. **150** setzen, „Token refreshes“ ebenfalls großzügig lassen. **Save**.
+3. **E-Mails:** Der eingebaute Versand schafft nur **2 E-Mails pro Stunde für das ganze Projekt**. „Passwort vergessen“ klappt dann für die meisten nicht. Lösungen:
+   - Schüler nutzen **„Weiter mit Google“** (kein Passwort, keine Mail nötig), oder
+   - eigenen Mailversand eintragen: **Authentication → Emails → SMTP Settings** (z. B. kostenlose Stufe bei Brevo oder Resend; dort Absenderadresse bestätigen und die SMTP-Daten eintragen). Danach unter **Rate Limits** das Mail-Limit erhöhen.
+4. **Einschlafen in den Ferien:** Gratis-Projekte pausiert Supabase nach einer Woche ohne Nutzung. Der GitHub-Job **„Supabase wach halten“** (`.github/workflows/supabase-wach.yml`) fragt zweimal täglich die Datenbank, das verhindert es in der Regel. Garantiert ist das nicht: Nach den Ferien im Supabase-Dashboard kurz schauen, ob das Projekt läuft (sonst **Restore project**). GitHub selbst pausiert solche Jobs, wenn 60 Tage lang nichts im Repo passiert; dann unter **Actions** wieder einschalten.
+5. **Geteilte Schul-PCs:** Ohne Konto bleibt der Lernstand im Browser und der nächste Schüler sieht ihn. Deshalb: Konto nutzen und nach der Stunde **ausloggen** (Profil → Konto → Ausloggen). Beim Ausloggen wird der Browser geleert.
+6. **Rangliste:** XP werden im Browser berechnet. Wer sich mit den Entwicklerwerkzeugen auskennt, kann eigene XP verändern. Für Noten also nicht die Rangliste nehmen.
 
 ## E-Mail und Passwort ändern
 

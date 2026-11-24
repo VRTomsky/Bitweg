@@ -70,12 +70,12 @@ drop trigger if exists groups_add_owner on public.groups;
 create trigger groups_add_owner after insert on public.groups
   for each row execute function public.group_add_owner();
 
--- Hoechstens 30 Mitglieder pro Gruppe
+-- Hoechstens 60 Mitglieder pro Gruppe (frueher 30, siehe 08-klassen.sql)
 create or replace function public.group_limit_members() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if (select count(*) from public.group_members where group_id = new.group_id) >= 30 then
-    raise exception 'Die Gruppe ist voll (30 Mitglieder).';
+  if (select count(*) from public.group_members where group_id = new.group_id) >= 60 then
+    raise exception 'Die Gruppe ist voll (60 Mitglieder).';
   end if;
   return new;
 end;

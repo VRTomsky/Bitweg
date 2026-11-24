@@ -449,7 +449,7 @@ function webDataSection() {
       h('button', { type: 'button', class: 'btn btn-small', onclick: exportData }, h('span', { html: icon('copy', 16) }), t('Als Datei herunterladen', 'Download as file')),
       h('label', { class: 'btn btn-small' }, t('Datei laden', 'Load file'), h('input', { type: 'file', accept: 'application/json,.json', class: 'sr-only', onchange: importData })),
       h('button', { type: 'button', class: 'btn btn-small btn-bad', onclick: resetData }, t('Alles zurücksetzen', 'Reset everything'))),
-    h('p', { class: 'muted', style: { marginTop: 'var(--s4)' } }, h('a', { href: 'datenschutz.html' }, t('Datenschutzerklärung', 'Privacy policy'))));
+    h('p', { class: 'muted', style: { marginTop: 'var(--s4)' } }, h('a', { href: 'ueber.html' }, t('Über Bitweg', 'About Bitweg')), ' · ', h('a', { href: 'datenschutz.html' }, t('Datenschutzerklärung', 'Privacy policy')), ' · ', h('a', { href: 'impressum.html' }, t('Impressum', 'Legal notice'))));
 }
 
 /* ---------------------------------------------------------------- Seite */

@@ -47,7 +47,7 @@ function route() {
       location.replace('#/pfad');
       return;
     }
-    document.title = t('Willkommen · Bitweg', 'Welcome · Bitweg');
+    document.title = t('Bitweg: Python und C++ lernen, kostenlos im Browser', 'Bitweg: learn Python and C++ for free in your browser');
     renderOnboarding(arg === 'kurs' ? arg2 : null);
     return;
   }

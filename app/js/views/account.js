@@ -75,7 +75,7 @@ function frame(title, sub, body, mood = 'wave') {
       h('h1', {}, title),
       sub ? h('p', { class: 'muted' }, sub) : null,
       body),
-    h('p', { class: 'auth-legal' }, h('a', { href: 'datenschutz.html' }, t('Datenschutz', 'Privacy')))));
+    h('p', { class: 'auth-legal' }, h('a', { href: 'datenschutz.html' }, t('Datenschutz', 'Privacy')), ' · ', h('a', { href: 'impressum.html' }, t('Impressum', 'Legal notice')))));
 }
 
 function errorBox() {

@@ -5,9 +5,14 @@ import { store } from './store.js';
 
 export const UI_LANGS = { de: 'Deutsch', en: 'English' };
 
+// Suchmaschinen und KI-Crawler melden meist Englisch. bitweg.de ist eine deutsche Seite,
+// darum sollen sie die deutsche Fassung sehen (sonst landet "Welcome · Bitweg" bei Google).
+const CRAWLER = /bot|crawl|spider|slurp|google|bing|yandex|duckduck|baidu|facebookexternalhit|embedly|lighthouse|headless|preview|gptbot|claude|perplexity|anthropic|chatgpt/i;
+
 export function uiLang() {
   const set = store.state.settings.uiLang;
   if (set === 'de' || set === 'en') return set;
+  if (CRAWLER.test(navigator.userAgent || '')) return 'de';
   return /^de\b/i.test(navigator.language || '') ? 'de' : 'en';
 }
 
